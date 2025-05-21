@@ -89,22 +89,170 @@
 
 
 
-(defrule mark-water-row (declare (salience 10))
+(defrule mark-water-cell-y0 (declare (salience 20))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 0)))
 =>
   (assert (agent-cell (x ?r) (y 0) (content water)))
-  (assert (agent-cell (x ?r) (y 1) (content water)))
-  (assert (agent-cell (x ?r) (y 2) (content water)))
-  (assert (agent-cell (x ?r) (y 3) (content water)))
-  (assert (agent-cell (x ?r) (y 4) (content water)))
-  (assert (agent-cell (x ?r) (y 5) (content water)))
-  (assert (agent-cell (x ?r) (y 6) (content water)))
-  (assert (agent-cell (x ?r) (y 7) (content water)))
-  (assert (agent-cell (x ?r) (y 8) (content water)))
-  (assert (agent-cell (x ?r) (y 9) (content water)))
-
 )
+
+(defrule mark-water-cell-y1 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 1)))
+=>
+  (assert (agent-cell (x ?r) (y 1) (content water)))
+)
+
+(defrule mark-water-cell-y2 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 2)))
+=>
+  (assert (agent-cell (x ?r) (y 2) (content water)))
+)
+ 
+(defrule mark-water-cell-y3 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 3)))
+=>
+  (assert (agent-cell (x ?r) (y 3) (content water)))
+)
+
+(defrule mark-water-cell-y4 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 4)))
+=>
+  (assert (agent-cell (x ?r) (y 4) (content water)))
+)
+
+(defrule mark-water-cell-y5 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 5)))
+=>
+  (assert (agent-cell (x ?r) (y 5) (content water)))
+)
+
+(defrule mark-water-cell-y6 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 6)))
+=>
+  (assert (agent-cell (x ?r) (y 6) (content water)))
+)
+
+(defrule mark-water-cell-y7 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 7)))
+=>
+  (assert (agent-cell (x ?r) (y 7) (content water)))
+)
+
+(defrule mark-water-cell-y8 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 8)))
+=>
+  (assert (agent-cell (x ?r) (y 8) (content water)))
+)
+
+(defrule mark-water-cell-y9 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?r) (num 0))
+  (not (agent-cell (x ?r) (y 9)))
+=>
+  (assert (agent-cell (x ?r) (y 9) (content water)))
+)
+
+
+;colonne
+
+(defrule mark-water-cell-x0 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 0) (y ?c)))
+=>
+  (assert (agent-cell (x 0) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x1 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 1) (y ?c)))
+=>
+  (assert (agent-cell (x 1) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x2 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 2) (y ?c)))
+=>
+  (assert (agent-cell (x 2) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x3 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 3) (y ?c)))
+=>
+  (assert (agent-cell (x 3) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x4 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 4) (y ?c)))
+=>
+  (assert (agent-cell (x 4) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x5 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 5) (y ?c)))
+=>
+  (assert (agent-cell (x 5) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x6 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 6) (y ?c)))
+=>
+  (assert (agent-cell (x 6) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x7 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 7) (y ?c)))
+=>
+  (assert (agent-cell (x 7) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x8 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 8) (y ?c)))
+=>
+  (assert (agent-cell (x 8) (y ?c) (content water)))
+)
+
+(defrule mark-water-cell-x9 (declare (salience 20))
+  (status (step ?s) (currently running))
+  (actual-boat-per-row (row ?c) (num 0))
+  (not (agent-cell (x 9) (y ?c)))
+=>
+  (assert (agent-cell (x 9) (y ?c) (content water)))
+)
+
+
 
 (defrule mark-water-col (declare (salience 10))
   (status (step ?s) (currently running))
