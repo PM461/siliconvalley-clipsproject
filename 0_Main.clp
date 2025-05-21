@@ -11,7 +11,7 @@
 ;;stato corrente dell'esecuzione
 (deftemplate status (slot step) (slot currently (allowed-values running stopped)) )
 
-;;numero di mosse ancora disponibili (tra fire e guess)
+;;numero di mosse ancora disponisssbili (tra fire e guess)
 (deftemplate moves (slot fires) (slot guesses) )
 
 (deftemplate statistics
