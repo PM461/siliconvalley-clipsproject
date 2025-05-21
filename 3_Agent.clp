@@ -666,6 +666,15 @@
 
 
 
+(defrule AGENT::idle-when-no-more-rules
+   (declare (salience -1000)) ; priorità bassissima, viene eseguita solo se non c'è altro
+   (status (step ?s) (currently running))
+   =>
+   (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
+   (focus PROB)
+)
+
+
 
 
 
