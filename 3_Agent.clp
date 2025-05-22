@@ -71,7 +71,7 @@
    
       (do-for-all-facts
       ((?r k-cell )) TRUE
-      (assert (agent-cell (x ?r:x) (y ?r:y) (content ?r:content)))
+      (assert (agent-cell (x ?r:x) (y ?r:y) (content ?r:content) (status missed)))
       )
    
 (retract ?fa)
@@ -94,7 +94,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 0)))
 =>
-  (assert (agent-cell (x ?r) (y 0) (content water)))
+  (assert (agent-cell (x ?r) (y 0) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y1 (declare (salience 20))
@@ -102,7 +102,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 1)))
 =>
-  (assert (agent-cell (x ?r) (y 1) (content water)))
+  (assert (agent-cell (x ?r) (y 1) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y2 (declare (salience 20))
@@ -110,7 +110,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 2)))
 =>
-  (assert (agent-cell (x ?r) (y 2) (content water)))
+  (assert (agent-cell (x ?r) (y 2) (content water) (status missed)))
 )
  
 (defrule mark-water-cell-y3 (declare (salience 20))
@@ -118,7 +118,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 3)))
 =>
-  (assert (agent-cell (x ?r) (y 3) (content water)))
+  (assert (agent-cell (x ?r) (y 3) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y4 (declare (salience 20))
@@ -126,7 +126,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 4)))
 =>
-  (assert (agent-cell (x ?r) (y 4) (content water)))
+  (assert (agent-cell (x ?r) (y 4) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y5 (declare (salience 20))
@@ -134,7 +134,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 5)))
 =>
-  (assert (agent-cell (x ?r) (y 5) (content water)))
+  (assert (agent-cell (x ?r) (y 5) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y6 (declare (salience 20))
@@ -142,7 +142,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 6)))
 =>
-  (assert (agent-cell (x ?r) (y 6) (content water)))
+  (assert (agent-cell (x ?r) (y 6) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y7 (declare (salience 20))
@@ -150,7 +150,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 7)))
 =>
-  (assert (agent-cell (x ?r) (y 7) (content water)))
+  (assert (agent-cell (x ?r) (y 7) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y8 (declare (salience 20))
@@ -158,7 +158,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 8)))
 =>
-  (assert (agent-cell (x ?r) (y 8) (content water)))
+  (assert (agent-cell (x ?r) (y 8) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-y9 (declare (salience 20))
@@ -166,7 +166,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 9)))
 =>
-  (assert (agent-cell (x ?r) (y 9) (content water)))
+  (assert (agent-cell (x ?r) (y 9) (content water) (status missed)))
 )
 
 
@@ -177,7 +177,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 0) (y ?c)))
 =>
-  (assert (agent-cell (x 0) (y ?c) (content water)))
+  (assert (agent-cell (x 0) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x1 (declare (salience 20))
@@ -185,7 +185,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 1) (y ?c)))
 =>
-  (assert (agent-cell (x 1) (y ?c) (content water)))
+  (assert (agent-cell (x 1) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x2 (declare (salience 20))
@@ -193,7 +193,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 2) (y ?c)))
 =>
-  (assert (agent-cell (x 2) (y ?c) (content water)))
+  (assert (agent-cell (x 2) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x3 (declare (salience 20))
@@ -201,7 +201,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 3) (y ?c)))
 =>
-  (assert (agent-cell (x 3) (y ?c) (content water)))
+  (assert (agent-cell (x 3) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x4 (declare (salience 20))
@@ -209,7 +209,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 4) (y ?c)))
 =>
-  (assert (agent-cell (x 4) (y ?c) (content water)))
+  (assert (agent-cell (x 4) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x5 (declare (salience 20))
@@ -217,7 +217,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 5) (y ?c)))
 =>
-  (assert (agent-cell (x 5) (y ?c) (content water)))
+  (assert (agent-cell (x 5) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x6 (declare (salience 20))
@@ -225,7 +225,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 6) (y ?c)))
 =>
-  (assert (agent-cell (x 6) (y ?c) (content water)))
+  (assert (agent-cell (x 6) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x7 (declare (salience 20))
@@ -233,7 +233,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 7) (y ?c)))
 =>
-  (assert (agent-cell (x 7) (y ?c) (content water)))
+  (assert (agent-cell (x 7) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x8 (declare (salience 20))
@@ -241,7 +241,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 8) (y ?c)))
 =>
-  (assert (agent-cell (x 8) (y ?c) (content water)))
+  (assert (agent-cell (x 8) (y ?c) (content water) (status missed)))
 )
 
 (defrule mark-water-cell-x9 (declare (salience 20))
@@ -249,7 +249,7 @@
   (actual-boat-per-row (row ?c) (num 0))
   (not (agent-cell (x 9) (y ?c)))
 =>
-  (assert (agent-cell (x 9) (y ?c) (content water)))
+  (assert (agent-cell (x 9) (y ?c) (content water) (status missed)))
 )
 
 
@@ -258,16 +258,16 @@
   (status (step ?s) (currently running))
   (actual-boat-per-col (col ?c) (num 0))
 =>
-  (assert (agent-cell (x 0) (y ?c) (content water)))
-  (assert (agent-cell (x 1) (y ?c) (content water)))
-  (assert (agent-cell (x 2) (y ?c) (content water)))
-  (assert (agent-cell (x 3) (y ?c) (content water)))
-  (assert (agent-cell (x 4) (y ?c) (content water)))
-  (assert (agent-cell (x 5) (y ?c) (content water)))
-  (assert (agent-cell (x 6) (y ?c) (content water)))
-  (assert (agent-cell (x 7) (y ?c) (content water)))
-  (assert (agent-cell (x 8) (y ?c) (content water)))
-  (assert (agent-cell (x 9) (y ?c) (content water)))
+  (assert (agent-cell (x 0) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 1) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 2) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 3) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 4) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 5) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 6) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 7) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 8) (y ?c) (content water) (status missed)))
+  (assert (agent-cell (x 9) (y ?c) (content water) (status missed)))
 
 )
 
@@ -286,10 +286,10 @@
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
    
-  (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water)))
-  (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water)))
-  (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water)))
-  (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water)))
+  (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+  (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
+  (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+  (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 
 ;todo fare controllo sulle diagonali
@@ -309,9 +309,9 @@
   (test (<= (+ ?y 1) 9))      ; destra
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
-  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water))) ; destra
-  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water))) ; sinistra
-  (assert (agent-cell (x (- ?x 1)) (y ?y)       (content water))) ; sopra
+  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water) (status missed))) ; destra
+  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water) (status missed))) ; sinistra
+  (assert (agent-cell (x (- ?x 1)) (y ?y)       (content water) (status missed))) ; sopra
 )
 
 
@@ -325,9 +325,9 @@
   (test (<= (+ ?y 1) 9))      ; destra
   (test (>= (- ?y 1) 0))      ; sinistra
  =>
-  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water))) ; destra
-  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water))) ; sinistra
-  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water))) ; sotto
+  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water) (status missed))) ; destra
+  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water) (status missed))) ; sinistra
+  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water) (status missed))) ; sotto
 
 )
 
@@ -340,9 +340,9 @@
   (test (<= (+ ?y 1) 9))      ; destra
   (test (>= (- ?y 1) 0))      ; sinistra
  =>
-   (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water))) ; sopra
-  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water))) ; sinistra
-  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water))) ; sotto
+   (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water) (status missed))) ; sopra
+  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water) (status missed))) ; sinistra
+  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water) (status missed))) ; sotto
 
 )
 
@@ -356,9 +356,9 @@
   (test (<= (+ ?y 1) 9))      ; destra
   (test (>= (- ?y 1) 0))      ; sinistra
   =>
-  (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water))) ; sopra
-  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water))) ; destra
-  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water))) ; sotto
+  (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water) (status missed))) ; sopra
+  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water) (status missed))) ; destra
+  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water) (status missed))) ; sotto
 )
 
 (defrule mark-sub-water (declare (salience 7))
@@ -372,10 +372,10 @@
   (test (>= (- ?y 1) 0))      ; sinistra
 
   =>
-  (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water))) ; sopra
-  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water))) ; destra
-  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water))) ; sotto
-  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water))) ; sinistra
+  (assert (agent-cell (x (- ?x 1)) (y ?y)      (content water) (status missed))) ; sopra
+  (assert (agent-cell (x ?x)       (y (+ ?y 1)) (content water) (status missed))) ; destra
+  (assert (agent-cell (x (+ ?x 1)) (y ?y)       (content water) (status missed))) ; sotto
+  (assert (agent-cell (x ?x)       (y (- ?y 1)) (content water) (status missed))) ; sinistra
 )
 
 
@@ -392,7 +392,7 @@
                      (or (eq ?c:content right)
                          (eq ?c:content middle))))))
     =>
-    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic))))
+    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed))))
 
 (defrule AGENT::mark-right-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -403,7 +403,7 @@
                      (or (eq ?c:content left)
                          (eq ?c:content middle))))))
     =>
-    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic))))
+    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed))))
 
 (defrule AGENT::mark-top-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -414,7 +414,7 @@
                      (or (eq ?c:content bot)
                          (eq ?c:content middle))))))
     =>
-    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic))))
+    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed))))
 
 (defrule AGENT::mark-bottom-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -425,7 +425,7 @@
                      (or (eq ?c:content top)
                          (eq ?c:content middle))))))
     =>
-    (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic))))
+    (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed))))
 
 
 
@@ -448,7 +448,7 @@
     =>
     ; Calcola la coordinata a sinistra
     (bind ?y-left (- ?y 1))
-     (bind ?y-right (+ ?y 1))
+    (bind ?y-right (+ ?y 1))
     (bind ?x-up (- ?x 1))
     (bind ?x-down (+ ?x 1))
 
@@ -460,7 +460,7 @@
                        (eq ?cell:content middle)))))
         then
         (printout t "puttana" crlf)
-        (assert (agent-cell (x ?x) (y ?y-left) (content generic)))
+        (assert (agent-cell (x ?x) (y ?y-left) (content generic) (status guessed)))
     )
 
      ; DESTRA (y+1)
@@ -470,7 +470,7 @@
                        (= ?cell:y ?y-right)
                        (eq ?cell:content middle)))))
         then
-        (assert (agent-cell (x ?x) (y ?y-right) (content generic)))
+        (assert (agent-cell (x ?x) (y ?y-right) (content generic) (status guessed)))
         (printout t "✅ DESTRA non-middle o assente: (" ?x "," ?y-right ")" crlf)
     )
 
@@ -481,7 +481,7 @@
                        (= ?cell:y ?y)
                        (eq ?cell:content middle)))))
         then
-        (assert (agent-cell (x ?x-up) (y ?y) (content generic)))
+        (assert (agent-cell (x ?x-up) (y ?y) (content generic) (status guessed)))
         (printout t "✅ SOPRA non-middle o assente: (" ?x-up "," ?y ")" crlf)
     )
 
@@ -492,7 +492,7 @@
                        (= ?cell:y ?y)
                        (eq ?cell:content middle)))))
         then
-        (assert (agent-cell (x ?x-down) (y ?y) (content generic)))
+        (assert (agent-cell (x ?x-down) (y ?y) (content generic) (status guessed)))
         (printout t "✅ SOTTO non-middle o assente: (" ?x-down "," ?y ")" crlf)
     )
 
@@ -542,7 +542,7 @@
                       (and (= ?cell:x ?x)
                            (= ?cell:y ?y-left)
                            (eq ?cell:content generic))
-        (modify ?cell (content left)))
+        (modify ?cell (content left) (status guessed)))
     )
 
     ; --- DESTRA ---
@@ -558,13 +558,13 @@
                             (= ?cell2:y ?y-right-2)
                             (or (eq ?cell2:content water)
                                 (> ?cell2 9))))))
-     then
-     (printout t "✅ DESTRA: generic + acqua/bordo più in là → (" ?x "," ?y-right ")" crlf)
-     (do-for-all-facts ((?cell agent-cell))
+      then
+      (printout t "✅ DESTRA: generic + acqua/bordo più in là → (" ?x "," ?y-right ")" crlf)
+      (do-for-all-facts ((?cell agent-cell))
                       (and (= ?cell:x ?x)
                            (= ?cell:y ?y-right)
                            (eq ?cell:content generic))
-        (modify ?cell (content right)))
+        (modify ?cell (content right) (status guessed)))
     )
 
     ; --- SOPRA ---
@@ -586,7 +586,7 @@
                       (and (= ?cell:x ?x-up)
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
-        (modify ?cell (content top)))
+        (modify ?cell (content top) (status guessed)))
     )
 
     ; --- SOTTO ---
@@ -608,7 +608,7 @@
                       (and (= ?cell:x ?x-down)
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
-        (modify ?cell (content bot)))
+        (modify ?cell (content bot) (status guessed)))
     )
 
     (printout t "➡️  Controllo completato per cella MIDDLE a bordo (" ?x "," ?y ")" crlf)
@@ -659,7 +659,7 @@
   (test (and (>= ?x 0) (<= ?x 9)))
   (test (and (>= ?y 0) (<= ?y 9)))
 =>
-  (assert (agent-cell (x ?x) (y ?y) (content water)))
+  (assert (agent-cell (x ?x) (y ?y) (content water) (probability 0.0) (status missed)))
   (printout t "Created cell [" ?x ", " ?y "] with content water." crlf)
 )
 
