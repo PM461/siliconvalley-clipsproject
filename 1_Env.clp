@@ -184,16 +184,15 @@
 	(assert (sink-boat ?n))
 )
 
-
-
 (defrule solve-count-guessed-ok
         (solve)
         (guess ?x ?y)
-        ?c <- (cell (x ?x) (y ?y) (content boat) (status none))
+        ?c <- (cell (x ?x) (y ?y) (content boat|hit-boat) (status none|fired))
         ?st <- (statistics (num_guess_ok ?gok))
 =>
-	(modify ?st (num_guess_ok (+ 1 ?gok)))
-	(modify ?c (content hit-boat) (status guessed))
+  (printout t "ENV --- [ " ?x " ] [ " ?y " ] " crlf)
+  (modify ?st (num_guess_ok (+ 1 ?gok)))
+  (modify ?c (content hit-boat) (status guessed))
 )
 
 (defrule solve-count-guessed-ko 
