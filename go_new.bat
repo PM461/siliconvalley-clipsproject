@@ -4,7 +4,7 @@
 
 (load 2_mapEnvironment.clp)
 (load 3_Agent.clp)
-(load 4_fact_calc.clp)
+(load 4_probability.clp)
 
 (reset)
 

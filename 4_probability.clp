@@ -1,14 +1,27 @@
-(defmodule PROB
-  (import AGENT ?ALL)
-  (import ENV ?ALL)
-  (export ?ALL)
-)
+
+(defmodule PROB (import MAIN ?ALL) (import ENV ?ALL) (import AGENT ?ALL) (export ?ALL))
+
+
+
 
 (deftemplate probability-cell
     (slot x (type INTEGER))
     (slot y (type INTEGER))
     (slot prob (type FLOAT))
 )
+
+
+(defrule clear-probability-cells
+  (declare (salience 150))
+  ?trigger <- (clear-probability) ; un fatto che attiva la regola
+  =>
+  (do-for-all-facts ((?f probability-cell)) TRUE
+    (retract ?f)
+  )
+  (retract ?trigger)
+  (printout t "Tutte le celle di probabilità sono state rimosse." crlf)
+)
+
 
 (defrule PROB::calculate-probabilities (declare (salience 100))
    (status (step ?s) (currently running))
@@ -54,36 +67,45 @@
 
 
 
-(defrule PROB::select-best-target (declare (salience 90))
-    (status (step ?s) (currently running))
-    (exists (probability-cell (prob ?p&:(> ?p 0.0))))
-    =>
-    ; Cerca il fatto con la probabilità più alta
-    (bind ?max-prob 0.0)
-    (bind ?target-x -1)
-    (bind ?target-y -1)
+(defrule PROB::select-best-target
+  (declare (salience 90))
+  (status (step ?s) (currently running))
+  =>
+  (bind ?max-prob 0.0)
+  (bind ?target-x -1)
+  (bind ?target-y -1)
+  (bind ?best-fact nil)
 
-    (do-for-all-facts
-        ((?p probability-cell)) 
-        (> ?p:prob ?max-prob) 
-        (bind ?max-prob ?p:prob)
-        (bind ?target-x ?p:x)
-        (bind ?target-y ?p:y)
-    )
+  (do-for-all-facts ((?p probability-cell)) 
+      (> ?p:prob ?max-prob)
+    (bind ?max-prob ?p:prob)
+    (bind ?target-x ?p:x)
+    (bind ?target-y ?p:y)
+    (bind ?best-fact ?p) ; Salva il fact da rimuovere
+  )
 
-    (if (> ?max-prob 0.0) then
-        (assert (exec (step ?s) (action fire) (x ?target-x) (y ?target-y)))
-        (printout t "Sparo alla casella (" ?target-x "," ?target-y ") con probabilità " ?max-prob crlf)
-    else
-        (printout t "Nessuna cella valida trovata!" crlf)
-    )
-     (focus AGENT)
+  (if (> ?max-prob 0.0) then
+    (assert (exec (step ?s) (action fire) (x ?target-x) (y ?target-y)))
+    (printout t "Sparo alla casella (" ?target-x "," ?target-y ") con probabilità " ?max-prob crlf)
+    (retract ?best-fact) ; Retract corretto!
+    (pop-focus)
+  else
+    (printout t "Nessuna cella valida trovata!" crlf)
+  )
+
+  (assert (init-calc-counters-cell (status needed)))
+  (assert (init-calc-counters (status needed)))
+  (assert (init-calc-counters-lines (status needed)))
+  (printout t "↩️  STRATEGY ha finito, torno ad AGENT..." crlf)
+  (focus AGENT)
 )
+
 
 (defrule back-to-agent
    (declare (salience -1000))
    (strategy-step done)
    =>
    (printout t "↩️  STRATEGY ha finito, torno ad AGENT..." crlf)
+   (assert (init-calc-counters (status needed)))
    (focus AGENT)
 )

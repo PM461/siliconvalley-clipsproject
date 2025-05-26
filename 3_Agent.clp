@@ -107,6 +107,34 @@
 )
 
 
+(defrule copia-azione-missed
+(declare (salience 20))
+   
+   
+   (k-cell (x ?x) (y ?y) (content water))
+   ?fa <- (agent-cell (x ?x) (y ?y))
+   (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+   =>
+      (retract ?fa )
+      (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+      
+  
+)
+
+(defrule copia-azione-fired
+  (declare (salience 21))
+  (k-cell (x ?x) (y ?y) (content ?c))
+  (test (and (neq ?c water) (neq ?c unknown)))
+  ?fa <- (agent-cell (x ?x) (y ?y))
+  (not (agent-cell (x ?x) (y ?y) (status fired)))
+  =>
+  (retract ?fa)
+  (assert (agent-cell (x ?x) (y ?y) (content ?c) (status fired)))
+  (printout t "Azione copiata: (" ?x "," ?y ") -> status missed con content = " ?c crlf))
+
+
+
+
 
 
 ;----------------------------------------------
@@ -781,14 +809,14 @@
     )
 )
 
-(defrule fire-check (declare (salience 0))
-    (status (step ?s) (currently running))
-    (cell (x ?x) (y ?y) (content ?c) (status fired))
-    ?cell <- (agent-cell (x ) (y 1) (neq))
-    =>
-    (modify ?cell (x ?x) (y ?y) (content ?c) (status fired))
+; (defrule fire-check (declare (salience 0))
+;     (status (step ?s) (currently running))
+;     (cell (x ?x) (y ?y) (content ?c) (status fired))
+;     ?cell <- (agent-cell (x ) (y 1) (neq))
+;     =>
+;     (modify ?cell (x ?x) (y ?y) (content ?c) (status fired))
 
-)
+; )
 ;----------------------------------------------
 ;se non esiste crea una agent-cell (x) (y) con x e y compresi da 0 a 9 per x ed y mancante
 ;----------------------------------------------
@@ -805,6 +833,7 @@
   (status (step ?s) (currently running))
   =>
   (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
+  (assert (clear-probability))
   (focus PROB)
 )
 
