@@ -123,14 +123,15 @@
 
 (defrule copia-azione-fired
   (declare (salience 21))
-  (k-cell (x ?x) (y ?y) (content ?c))
-  (test (and (neq ?c water) (neq ?c unknown)))
-  ?fa <- (agent-cell (x ?x) (y ?y))
-  (not (agent-cell (x ?x) (y ?y) (status fired)))
+  (copiazionefired ?target-x ?target-y)
+  (k-cell (x ?target-x) (y ?target-y) (content ?c&:(neq ?c water)))
+  
+  ?fa <- (agent-cell (x ?target-x) (y ?target-y))
+  (not (agent-cell (x ?target-x) (y ?target-y) (status fired)))
   =>
   (retract ?fa)
-  (assert (agent-cell (x ?x) (y ?y) (content ?c) (status fired)))
-  (printout t "Azione copiata: (" ?x "," ?y ") -> status missed con content = " ?c crlf))
+  (assert (agent-cell (x ?target-x) (y ?target-y) (content ?c) (status fired)))
+  (printout t "Azione copiata: ("  ?target-x ","  ?target-y ") -> status fired con content = " ?c crlf))
 
 
 

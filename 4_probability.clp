@@ -87,15 +87,14 @@
   (if (> ?max-prob 0.0) then
     (assert (exec (step ?s) (action fire) (x ?target-x) (y ?target-y)))
     (printout t "Sparo alla casella (" ?target-x "," ?target-y ") con probabilità " ?max-prob crlf)
+    (assert (copiazionefired ?target-x ?target-y))
     (retract ?best-fact) ; Retract corretto!
     (pop-focus)
   else
     (printout t "Nessuna cella valida trovata!" crlf)
   )
 
-  (assert (init-calc-counters-cell (status needed)))
-  (assert (init-calc-counters (status needed)))
-  (assert (init-calc-counters-lines (status needed)))
+  
   (printout t "↩️  STRATEGY ha finito, torno ad AGENT..." crlf)
   (focus AGENT)
 )
