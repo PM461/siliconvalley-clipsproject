@@ -14,32 +14,27 @@
    (status (step ?s) (currently running))
    =>
    ; Trova tutte le celle che non sono ancora state colpite
-   (bind ?cells (find-all-facts ((?c agent-cell)) (eq ?c:status none)))
+   (bind ?cells (find-all-facts ((?c agent-cell)) (eq ?c:content unknown)))
 
-   (printout t "[DEBUG] Numero celle candidate: " (length$ ?cells) crlf)
 
    (foreach ?cell ?cells
       (bind ?x (fact-slot-value ?cell x))
       (bind ?y (fact-slot-value ?cell y))
 
-      (printout t "[DEBUG] Calcolo probabilità per cella (" ?x "," ?y ")" crlf)
 
       ; Cerca fatti k-per-row e k-per-col
       (bind ?rows (find-all-facts ((?r k-per-row)) (eq ?r:row ?y)))
       (bind ?cols (find-all-facts ((?c k-per-col)) (eq ?c:col ?x)))
 
-      (printout t "[DEBUG] k-per-row trovati: " (length$ ?rows) ", k-per-col trovati: " (length$ ?cols) crlf)
 
       ; Calcola la probabilità solo se esistono i dati
       (if (and (> (length$ ?rows) 0) (> (length$ ?cols) 0)) then
          (bind ?row-num (fact-slot-value (nth$ 1 ?rows) num))
          (bind ?col-num (fact-slot-value (nth$ 1 ?cols) num))
 
-         (printout t "[DEBUG] row-num = " ?row-num ", col-num = " ?col-num crlf)
 
          (bind ?prob (/ (+ ?row-num ?col-num) 20.0))
       else
-         (printout t "[DEBUG] Dati mancanti, assegno prob = 0.0" crlf)
          (bind ?prob 0.0)
       )
 
@@ -47,7 +42,6 @@
       (bind ?found (find-all-facts ((?f probability-cell))
          (and (eq ?f:x ?x) (eq ?f:y ?y))))
 
-      (printout t "[DEBUG] probability-cell trovati: " (length$ ?found) crlf)
 
       ; Se esiste, lo modifichi. Altrimenti lo crei.
       (if (> (length$ ?found) 0) then
@@ -57,6 +51,8 @@
       )
    )
 )
+
+
 
 (defrule PROB::select-best-target (declare (salience 90))
     (status (step ?s) (currently running))
@@ -81,6 +77,7 @@
     else
         (printout t "Nessuna cella valida trovata!" crlf)
     )
+     (focus AGENT)
 )
 
 (defrule back-to-agent
