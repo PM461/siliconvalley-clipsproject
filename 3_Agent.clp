@@ -115,6 +115,7 @@
    (k-cell (x ?x) (y ?y) (content water))
    ?fa <- (agent-cell (x ?x) (y ?y))
    (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+   (not (agent-cell (x ?x) (y ?y) (status fired)))
    =>
       (retract ?fa )
       (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
@@ -126,6 +127,7 @@
   (declare (salience 21))
   (copiazionefired ?target-x ?target-y)
   (k-cell (x ?target-x) (y ?target-y) (content ?c&:(neq ?c water)))
+  
   
   ?fa <- (agent-cell (x ?target-x) (y ?target-y))
   (not (agent-cell (x ?target-x) (y ?target-y) (status fired)))

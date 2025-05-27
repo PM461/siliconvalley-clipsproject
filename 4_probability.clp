@@ -23,47 +23,74 @@
 )
 
 
-(defrule PROB::calculate-probabilities (declare (salience 100))
+(defrule PROB::calculate-probabilities
+   (declare (salience 100))
    (status (step ?s) (currently running))
    =>
    ; Trova tutte le celle che non sono ancora state colpite
    (bind ?cells (find-all-facts ((?c agent-cell)) (eq ?c:content unknown)))
 
-
    (foreach ?cell ?cells
       (bind ?x (fact-slot-value ?cell x))
       (bind ?y (fact-slot-value ?cell y))
 
+      ; Inizializza tutte le variabili numeriche
+      (bind ?row-num 0)
+      (bind ?col-num 0)
+      (bind ?occupied-row-cells 0)
+      (bind ?occupied-col-cells 0)
+      (bind ?prob 0.0)
 
       ; Cerca fatti k-per-row e k-per-col
       (bind ?rows (find-all-facts ((?r k-per-row)) (eq ?r:row ?y)))
       (bind ?cols (find-all-facts ((?c k-per-col)) (eq ?c:col ?x)))
 
-
-      ; Calcola la probabilità solo se esistono i dati
-      (if (and (> (length$ ?rows) 0) (> (length$ ?cols) 0)) then
+      ; Calcola la probabilità solo se esistono i dati (controllo sicuro senza listp)
+      (if (and (neq ?rows nil) (neq ?cols nil)) then
          (bind ?row-num (fact-slot-value (nth$ 1 ?rows) num))
          (bind ?col-num (fact-slot-value (nth$ 1 ?cols) num))
 
+         ; Calcola celle occupate nella riga (y)
+         (bind ?row-cells (find-all-facts ((?c agent-cell)) (eq ?c:y ?y)))
+         (bind ?occupied-row-cells 0)
+         (foreach ?rc ?row-cells
+            (if (neq (fact-slot-value ?rc content) unknown) then
+               (bind ?occupied-row-cells (+ ?occupied-row-cells 1))
+            )
+         )
 
-         (bind ?prob (/ (+ ?row-num ?col-num) 20.0))
-      else
-         (bind ?prob 0.0)
+         ; Calcola celle occupate nella colonna (x)
+         (bind ?col-cells (find-all-facts ((?c agent-cell)) (eq ?c:x ?x)))
+         (bind ?occupied-col-cells 0)
+         (foreach ?cc ?col-cells
+            (if (neq (fact-slot-value ?cc content) unknown) then
+               (bind ?occupied-col-cells (+ ?occupied-col-cells 1))
+            )
+         )
+
+         ; Calcola denominatore con protezione contro divisione per zero
+         (bind ?denominator (- 18.0 (+ ?occupied-row-cells ?occupied-col-cells)))
+         (if (and (numberp ?denominator) (> ?denominator 0)) then
+            (bind ?prob (/ (+ ?row-num ?col-num) ?denominator))
+         else
+            (bind ?prob 0.0)
+         )
       )
 
-      ; Cerca se esiste già un fatto probability-cell per (x,y)
-      (bind ?found (find-all-facts ((?f probability-cell))
-         (and (eq ?f:x ?x) (eq ?f:y ?y))))
+      ; Debug: stampa i valori intermedi
+      (printout t "Cella [" ?x "," ?y "] - row-num: " ?row-num " col-num: " ?col-num 
+                " occ-row: " ?occupied-row-cells " occ-col: " ?occupied-col-cells 
+                " denom: " ?denominator " prob: " ?prob crlf)
 
-
-      ; Se esiste, lo modifichi. Altrimenti lo crei.
-      (if (> (length$ ?found) 0) then
-         (modify (nth$ 1 ?found) (prob ?prob))
-      else
+      ; Aggiorna o crea probability-cell
+      (bind ?found (find-all-facts ((?f probability-cell)) (and (eq ?f:x ?x) (eq ?f:y ?y))))
+     
          (assert (probability-cell (x ?x) (y ?y) (prob ?prob)))
-      )
+      
    )
 )
+   
+
 
 
 
