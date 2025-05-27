@@ -115,7 +115,7 @@
    (k-cell (x ?x) (y ?y) (content water))
    ?fa <- (agent-cell (x ?x) (y ?y))
    (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
-   (not (agent-cell (x ?x) (y ?y) (status fired)))
+
    =>
       (retract ?fa )
       (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
@@ -632,7 +632,50 @@
 )
 
 
+(defrule fill-row-with-generic (declare (salience 100))
+  ;; Match il fatto della riga
+  (actual-boat-per-row (row ?r) (num ?n))
+  (test (= ?n 
+           (length$ 
+             (find-all-facts ((?c agent-cell))
+               (and (eq ?c:x ?r)
+                    (eq ?c:content unknown))))))
 
+  =>
+
+  (printout t "ENTRATO! riga:" ?r "- numero per riga:" ?n "" crlf)
+  ;; Modifica tutte le celle unknown sulla riga ?r
+  (bind ?cells 
+    (find-all-facts ((?c agent-cell))
+      (and (eq ?c:x ?r)
+           (eq ?c:content unknown))))
+
+  (foreach ?cell ?cells
+  (printout t "cella:" ?cell "" crlf)
+    (modify ?cell (content generic))))
+
+
+(defrule fill-col-with-generic (declare (salience 100))
+  ;; Match il fatto della riga
+  (actual-boat-per-col (col ?r) (num ?n))
+  (test (= ?n 
+           (length$ 
+             (find-all-facts ((?c agent-cell))
+               (and (eq ?c:y ?r)
+                    (eq ?c:content unknown))))))
+
+  =>
+
+  (printout t "ENTRATO! colonna:" ?r "- numero per riga:" ?n "" crlf)
+  ;; Modifica tutte le celle unknown sulla riga ?r
+  (bind ?cells 
+    (find-all-facts ((?c agent-cell))
+      (and (eq ?c:y ?r)
+           (eq ?c:content unknown))))
+
+  (foreach ?cell ?cells
+  (printout t "cella:" ?cell "" crlf)
+    (modify ?cell (content generic))))
 
 ;----------------------------------------------
 ; REGOLA CHE DICE CHE SE MI TROVO SU UN BORDO ED HO UN MIDDLE 
@@ -912,7 +955,7 @@
 	(printout t "I know that cell [" ?x ", " ?y "] contains " ?t "." ?s " check "?k crlf)
 )
 
-(defrule create-missing-agent-cells (declare (salience -100))
+(defrule create-missing-agent-cells (declare (salience 0))
    ?c <- (coord x ?x y ?y)
    (not (agent-cell (x ?x) (y ?y)))
    =>

@@ -112,11 +112,12 @@
   )
 
   (if (> ?max-prob 0.0) then
-    (assert (exec (step ?s) (action fire) (x ?target-x) (y ?target-y)))
+  ;todo trasferire nel file di controllo
+    (assert (agent-fire ?target-x ?target-y))
     (printout t "Sparo alla casella (" ?target-x "," ?target-y ") con probabilità " ?max-prob crlf)
-    (assert (copiazionefired ?target-x ?target-y))
-    (retract ?best-fact) ; Retract corretto!
-    (pop-focus)
+    (retract ?best-fact)
+    (focus CONTROL)
+    
   else
     (printout t "Nessuna cella valida trovata!" crlf)
   )

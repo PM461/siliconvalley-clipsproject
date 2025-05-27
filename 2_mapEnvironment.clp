@@ -114,6 +114,14 @@
 (k-cell (x 1) (y 3) (content left))
 (k-cell (x 1) (y 5) (content water))
 (k-cell (x 9) (y 8) (content middle))
+
+(k-cell (x 8) (y 5) (content water))
+(k-cell (x 8) (y 6) (content water))
+(k-cell (x 8) (y 7) (content water))
+(k-cell (x 8) (y 8) (content water))
+(k-cell (x 8) (y 9) (content water))
+
+
 (k-per-row (row 0) (num 2))
 (k-per-row (row 1) (num 3))
 (k-per-row (row 2) (num 2))
