@@ -9,6 +9,7 @@
 	(slot y)
 	(slot content (allowed-values water left right middle top bot generic unknown sub))
   (slot status (allowed-values none guessed fired missed))
+  (slot boat-checked (default FALSE)) 
   (slot probability )
 )
 
@@ -80,7 +81,7 @@
       (assert (actual-boat-per-row (row ?r:row) (num ?r:num)))
     )
     (do-for-all-facts
-          ((?c k-per-col )) TRUE
+      ((?c k-per-col )) TRUE
     (assert (actual-boat-per-col (col ?c:col) (num ?c:num)))
   )
 (retract ?fa)
@@ -168,6 +169,14 @@
 =>
   (assert (agent-cell (x ?r) (y 2) (content water) (status missed)))
 )
+
+; (defrule mark-water-cell-y2-u (declare (salience 20))
+;   (status (step ?s) (currently running))
+;   (actual-boat-per-row (row ?r) (num 0))
+;   ?c <- (agent-cell (x ?r) (y 2) (content unknown))
+;   =>
+;   (modify ?c (x ?r) (y 2) (content water) (status missed))
+; )
  
 (defrule mark-water-cell-y3 (declare (salience 20))
   (status (step ?s) (currently running))
@@ -515,9 +524,11 @@
                 (and (eq ?c:x ?x)
                      (eq ?c:y (+ ?y 1))
                      (or (eq ?c:content right)
-                         (eq ?c:content middle))))))
+                         (eq ?c:content middle)
+                         (eq ?c:content generic))))))
     =>
-    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed))))
+    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed)))
+)
 
 (defrule AGENT::mark-right-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -526,9 +537,11 @@
                 (and (eq ?c:x ?x)
                      (eq ?c:y (- ?y 1))
                      (or (eq ?c:content left)
-                         (eq ?c:content middle))))))
+                         (eq ?c:content middle)
+                         (eq ?c:content generic))))))
     =>
-    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed))))
+    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed)))
+)
 
 (defrule AGENT::mark-top-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -537,9 +550,11 @@
                 (and (eq ?c:x (+ ?x 1))
                      (eq ?c:y ?y)
                      (or (eq ?c:content bot)
-                         (eq ?c:content middle))))))
+                         (eq ?c:content middle)
+                         (eq ?c:content generic))))))
     =>
-    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed))))
+    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed)))
+)
 
 (defrule AGENT::mark-bottom-piece (declare (salience 5))
     (status (step ?s) (currently running))
@@ -548,10 +563,73 @@
                 (and (eq ?c:x (- ?x 1))
                      (eq ?c:y ?y)
                      (or (eq ?c:content top)
-                         (eq ?c:content middle))))))
+                         (eq ?c:content middle)
+                         (eq ?c:content generic))))))
     =>
     (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed)))
 )
+
+;----------------------------------------------
+; SE BECCHIAMO UN ESTREMITà QUALSIASI CON UN GENERICO A FIANCO,
+; SE LA CELLA SUCCESSIVA è WATER ALLORA IL GENERICO è L'ESTREMITà OPPOSTA
+;----------------------------------------------
+(defrule AGENT::mark-opposite-left-piece (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content left))
+    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+    (test (= ?y1 (+ ?y 1))) ; destra
+    (test (bind ?y2 (+ ?y 2)))
+    (or
+      (agent-cell (x ?x) (y ?y2) (content water))
+      (not (agent-cell (x ?x) (y ?y2)))
+    )   
+    =>
+    (modify ?opp (content right) )
+)
+
+(defrule AGENT::mark-opposite-right-piece (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content right))
+    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+    (test (= ?y1 (- ?y 1))) ; destra
+    (test (bind ?y2 (- ?y 2)))
+    (or
+      (agent-cell (x ?x) (y ?y2) (content water))
+      (not (agent-cell (x ?x) (y ?y2)))
+    )   
+    =>
+    (modify ?opp (content left) )
+)
+
+(defrule AGENT::mark-opposite-top-piece (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content top))
+    ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
+    (test (= ?x1 (+ ?x 1)))
+    (test (bind ?x2 (+ ?x 2)))
+    (or
+      (agent-cell (x ?x2) (y ?y) (content water))
+      (not (agent-cell (x ?x2) (y ?y)))
+    )   
+    =>
+    (modify ?opp (content bot) )
+)
+
+(defrule AGENT::mark-opposite-bottom-piece (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content bot))
+    ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
+    (test (= ?x1 (- ?x 1)))
+    (test (bind ?x2 (- ?x 2)))
+    (or
+      (agent-cell (x ?x2) (y ?y) (content water))
+      (not (agent-cell (x ?x2) (y ?y)))
+    )   
+    =>
+    (modify ?opp (content top) )
+)
+
+
 
 
 ;----------------------------------------------
@@ -638,6 +716,10 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content middle))
   (agent-cell (x ?x2) (y ?y2) (content water))
+  (test (bind ?y-left (- ?y 1)))
+  (test (bind ?y-right (+ ?y 1)))
+  (not (agent-cell (x ?x) (y ?y-left) (content ?rleft&:(or (eq ?rleft left) (eq ?rleft generic)))))
+  (not (agent-cell (x ?x) (y ?y-right) (content ?rright&:(or (eq ?rright right) (eq ?rright generic)))))
   (test (or 
           (and (= ?x2 (+ ?x 1)) (= ?y2 ?y)) ; sotto
           (and (= ?x2 (- ?x 1)) (= ?y2 ?y)) ; sopra
@@ -652,6 +734,10 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content middle))
   (agent-cell (x ?x2) (y ?y2) (content water))
+  (test (bind ?x-top (- ?x 1)))
+  (test (bind ?x-bot (+ ?x 1)))
+  (not (agent-cell (x ?x-top) (y ?y) (content ?ctop&:(or (eq ?ctop top) (eq ?ctop generic)))))
+  (not (agent-cell (x ?x-bot) (y ?y) (content ?cbot&:(or (eq ?cbot bot) (eq ?cbot generic)))))
   (test (or 
           (and (= ?x2 ?x) (= ?y2 (+ ?y 1))) ; destra
           (and (= ?x2 ?x) (= ?y2 (- ?y 1))) ; sinistra
@@ -771,44 +857,41 @@
     (printout t "➡️  Controllo completato per cella MIDDLE a bordo (" ?x "," ?y ")" crlf)
 )
 
-(defrule print-what-i-know-since-the-beginning (declare (salience 0))
-	(agent-cell (x ?x) (y ?y) (content ?t) (status ?s))
-=>
-	(printout t "I know that cell [" ?x ", " ?y "] contains " ?t "." ?s crlf)
-)
+
 ;-----------------------------------------------
 ;SE ABBIAMO UN PEZZO DI NAVE NELLE agent-cell ALLORA LO TOGLIAMO DALLA RIGA O COLONNA   
    ; actual-boat-per-row (num 0) (row 0)
    ;actual-boat-per-col (num 0) (col 0)
 ;----------------------------------------------
 
-(defrule AGENT::remove-boat-from-row (declare (salience 3))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-    =>
-    ; Rimuovi la barca dalla riga
-    (do-for-all-facts ((?r actual-boat-per-row)) TRUE
-        (if (= ?r:row ?x)
-            then
-            (modify ?r (num (- ?r:num 1)))
-        )
-    )
+(defrule AGENT::remove-boat-from-col-row 
+(declare (salience 3))
+   (status (step ?s) (currently running))
+   ?cell <- (agent-cell (x ?x) (y ?y) (content ?d&:(and (neq ?d water) (neq ?d unknown))) (boat-checked FALSE))
+   ?r <- (actual-boat-per-row (row ?x) (num ?n1))
+   ?c <- (actual-boat-per-col (col ?y) (num ?n2))
+   (test (or (> ?n1 0) (> ?n2 0)))
+   =>
+   (bind ?new-n1 (- ?n1 1))
+   (bind ?new-n2 (- ?n2 1))
+   (modify ?r (num ?new-n1))
+   (modify ?c (num ?new-n2))
+   (modify ?cell (boat-checked TRUE))
+   (printout t "barche rimanenti riga " ?x " -> " ?new-n1 " barche rimanenti colonna " ?y " -> " ?new-n2 crlf)
 )
 
-(defrule AGENT::remove-boat-from-col (declare (salience 3))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-    =>
-    ; Rimuovi la barca dalla colonna
-    (do-for-all-facts ((?c actual-boat-per-col)) TRUE
-        (if (= ?c:col ?y)
-            then
-            (modify ?c (num (- ?c:num 1)))
-        )
-    )
-)
+; (defrule AGENT::remove-boat-from-col 
+; (declare (salience 3))
+;    (status (step ?s) (currently running))
+;    ?cell <- (agent-cell (x ?x) (y ?y) (content ?c&:(and (neq ?c water) (neq ?c unknown))) (boat-checked FALSE))
+;    ?b <- (actual-boat-per-col (col ?y) (num ?n&:(> ?n 0)))
+;    =>
+;    (bind ?new-n (- ?n 1))
+;    (modify ?b (num ?new-n))
+;    (modify ?cell (boat-checked TRUE))
+;    (printout t "barche rimanenti colonna " ?y " -> " ?new-n crlf)
+; )
+
 
 ; (defrule fire-check (declare (salience 0))
 ;     (status (step ?s) (currently running))
@@ -821,6 +904,11 @@
 ;----------------------------------------------
 ;se non esiste crea una agent-cell (x) (y) con x e y compresi da 0 a 9 per x ed y mancante
 ;----------------------------------------------
+(defrule print-what-i-know-since-the-beginning (declare (salience 0))
+	(agent-cell (x ?x) (y ?y) (content ?t) (status ?s) (boat-checked ?k))
+=>
+	(printout t "I know that cell [" ?x ", " ?y "] contains " ?t "." ?s " check "?k crlf)
+)
 
 (defrule create-missing-agent-cells (declare (salience -100))
    ?c <- (coord x ?x y ?y)
