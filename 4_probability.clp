@@ -11,6 +11,7 @@
 )
 
 
+
 (defrule clear-probability-cells
   (declare (salience 150))
   ?trigger <- (clear-probability) ; un fatto che attiva la regola

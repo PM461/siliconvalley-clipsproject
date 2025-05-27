@@ -529,7 +529,9 @@
                          (eq ?c:content middle)
                          (eq ?c:content generic))))))
     =>
+       (assert (agent-guess ?x (+ ?y 1)))
     (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed)))
+
 )
 
 (defrule AGENT::mark-right-piece (declare (salience 5))
@@ -542,6 +544,7 @@
                          (eq ?c:content middle)
                          (eq ?c:content generic))))))
     =>
+       (assert (agent-guess ?x (- ?y 1)))
     (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed)))
 )
 
@@ -555,6 +558,7 @@
                          (eq ?c:content middle)
                          (eq ?c:content generic))))))
     =>
+    (assert (agent-guess (+ ?x 1) ?y))
     (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed)))
 )
 
@@ -568,6 +572,7 @@
                          (eq ?c:content middle)
                          (eq ?c:content generic))))))
     =>
+       (assert (agent-guess (- ?x 1) ?y))
     (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed)))
 )
 
@@ -586,6 +591,7 @@
       (not (agent-cell (x ?x) (y ?y2)))
     )   
     =>
+    (assert (agent-guess ?x ?y))
     (modify ?opp (content right) )
 )
 
@@ -600,6 +606,7 @@
       (not (agent-cell (x ?x) (y ?y2)))
     )   
     =>
+    (assert (agent-guess ?x ?y))
     (modify ?opp (content left) )
 )
 
@@ -614,6 +621,7 @@
       (not (agent-cell (x ?x2) (y ?y)))
     )   
     =>
+    (assert (agent-guess ?x ?y))
     (modify ?opp (content bot) )
 )
 
@@ -628,6 +636,7 @@
       (not (agent-cell (x ?x2) (y ?y)))
     )   
     =>
+    (assert (agent-guess ?x ?y))
     (modify ?opp (content top) )
 )
 
@@ -651,7 +660,10 @@
            (eq ?c:content unknown))))
 
   (foreach ?cell ?cells
+  (bind ?x (fact-slot-value ?cell x))
+  (bind ?y (fact-slot-value ?cell y))
   (printout t "cella:" ?cell "" crlf)
+  (assert (agent-guess ?x ?y))
     (modify ?cell (content generic))))
 
 
@@ -674,7 +686,10 @@
            (eq ?c:content unknown))))
 
   (foreach ?cell ?cells
+  (bind ?x (fact-slot-value ?cell x))
+  (bind ?y (fact-slot-value ?cell y))
   (printout t "cella:" ?cell "" crlf)
+  (assert (agent-guess ?x ?y))
     (modify ?cell (content generic))))
 
 ;----------------------------------------------
@@ -705,6 +720,7 @@
                        (= ?cell:y ?y-left)
                        (eq ?cell:content middle)))))
         then
+         (assert (agent-guess ?x ?y-left))
         (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-left) (content generic) (status guessed))))
         (printout t "✅ SINISTRA non-middle o assente: (" ?x "," ?y-left ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
@@ -717,6 +733,7 @@
                        (= ?cell:y ?y-right)
                        (eq ?cell:content middle)))))
         then
+        (assert (agent-guess ?x ?y-right))
         (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-right) (content generic) (status guessed))))
         (printout t "✅ DESTRA non-middle o assente: (" ?x "," ?y-right ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
@@ -729,6 +746,7 @@
                        (= ?cell:y ?y)
                        (eq ?cell:content middle)))))
         then
+        (assert (agent-guess ?x-up ?y))
         (bind ?new-fact(assert (agent-cell (x ?x-up) (y ?y) (content generic) (status guessed))))
         (printout t "✅ SOPRA non-middle o assente: (" ?x-up "," ?y ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
@@ -741,6 +759,7 @@
                        (= ?cell:y ?y)
                        (eq ?cell:content middle)))))
         then
+        (assert (agent-guess ?x-down ?y))
         (bind ?new-fact(assert (agent-cell (x ?x-down) (y ?y) (content generic) (status guessed))))
         (printout t "✅ SOTTO non-middle o assente: (" ?x-down "," ?y ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
@@ -771,6 +790,10 @@
         )
   )
   =>
+  (bind ?yl (- ?y 1))
+  (bind ?yr (+ ?y 1))
+  (assert (agent-guess ?x ?yl))
+  (assert (agent-guess ?x ?yr))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed)))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed)))  
 )
@@ -789,6 +812,8 @@
         )
   )
   =>
+  (assert (agent-guess (- ?x 1) ?y ))
+  (assert (agent-guess (+ ?x 1) ?y ))
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed)))
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed)))
 )
@@ -830,6 +855,7 @@
                       (and (= ?cell:x ?x)
                            (= ?cell:y ?y-left)
                            (eq ?cell:content generic))
+        (assert (agent-guess ?cell:x ?cell:y))
         (modify ?cell (content left) (status guessed)))
     )
 
@@ -852,6 +878,7 @@
                       (and (= ?cell:x ?x)
                            (= ?cell:y ?y-right)
                            (eq ?cell:content generic))
+        (assert (agent-guess ?cell:x ?cell:y))                   
         (modify ?cell (content right) (status guessed)))
     )
 
@@ -874,6 +901,7 @@
                       (and (= ?cell:x ?x-up)
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
+        (assert (agent-guess ?cell:x ?cell:y))
         (modify ?cell (content top) (status guessed)))
     )
 
@@ -896,6 +924,7 @@
                       (and (= ?cell:x ?x-down)
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
+        (assert (agent-guess ?cell:x ?cell:y))
         (modify ?cell (content bot) (status guessed)))
     )
 
@@ -962,6 +991,18 @@
    (assert (agent-cell (x ?x) (y ?y) (content unknown)))
 )
 
+
+(defrule AGENT::guess-control
+  (declare (salience -500)) ; priorità bassissima, viene eseguita solo se non c'è altro
+  (agent-guess ?x ?y)
+  =>
+  (printout t "🔁 CI SONO DELLE AZIONI guess DA ESEGUIRE, passo a PROB..." crlf)
+  (focus PROB)
+)
+
+
+
+
 (defrule AGENT::idle-when-no-more-rules
   (declare (salience -1000)) ; priorità bassissima, viene eseguita solo se non c'è altro
   (status (step ?s) (currently running))
@@ -970,6 +1011,19 @@
   (assert (clear-probability))
   (focus PROB)
 )
+
+
+(defrule AGENT::idle-when-other-modules-rules
+  (declare (salience -10000)) ; priorità bassissima, viene eseguita solo se non c'è altro
+  (status (step ?s) (currently running))
+  =>
+  (assert(start-guessing))
+  (printout t "🔁 SEMBRA CHE SIA TUTTO FINITO, risolvo..." crlf)
+  (assert (agent-solve))
+  (focus CONTROL)
+)
+
+
 
 ; (defrule create-cell (declare (salience 2))
 ;   (agent-cell (x ?x) (y ?y) (content ?c))
