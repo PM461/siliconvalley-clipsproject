@@ -3,6 +3,8 @@
 ;  ---------------------------------------------
 (defmodule AGENT (import MAIN ?ALL) (import ENV ?ALL) (export ?ALL))
 
+(deftemplate temp-counter
+    (slot value))
 
 (deftemplate agent-cell ;nuoce celle copiate da k-cell che sono governate dall'agente e servono per decidere
 	(slot x)
@@ -65,7 +67,8 @@
    (init-calc-counters-cell (status needed))
    (init-calc-counters-lines (status needed))
     (fire-possibile)
-   
+   (copiazionefired 9 8)
+   (copiazionefired 8 4)
 )
 
 (defrule inizializzazione 
@@ -396,7 +399,6 @@
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
 (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
-(assert(diag ?x ?y))
   (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale alto-destra
@@ -410,7 +412,6 @@
   (test (<= (+ ?y 1) 9))      ; destra
   =>
   (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
-  (assert(diag ?x ?y))
   (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-sinistra
@@ -424,7 +425,6 @@
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
 (cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
-(assert(diag ?x ?y))
   (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-destra
@@ -437,7 +437,6 @@
   (test (<= (+ ?x 1) 9))      ; sotto
   (test (<= (+ ?y 1) 9))      ; destra
 =>
-(assert(diag ?x ?y))
 (cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
   (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -808,26 +807,80 @@
     (modify ?opp (content top) )
 )
 
+(deftemplate contatore-righe
+  (slot x)
+  (slot conta)
+)
 
-(defrule fill-row-with-generic (declare (salience 47))
-
+(defrule fill-row-with-generic (declare (salience 100))
   ;; Match il fatto della riga
   (actual-boat-per-row (row ?r) (num ?n))
- 
+  (contatore-righe (x ?x) (conta ?conta))
+  (test (= ?n ?conta))
+
+  =>
+
+  (printout t "ENTRATO! riga:" ?r "- numero per riga:" ?n " conta " ?conta crlf)
+  ;; Modifica tutte le celle unknown sulla riga ?r
+    (do-for-all-facts 
+  ((?c agent-cell))
+  (and (eq (fact-slot-value ?c x) ?r)
+       (eq (fact-slot-value ?c content) unknown))
   
+  (bind ?x (fact-slot-value ?c x))
+  (bind ?y (fact-slot-value ?c y))
+
+  (assert (agent-guess ?x ?y))
+  (cancella-tutte-le-copie ?x ?y)
+  (assert (agent-cell (x ?x) (y ?y) (content generic)))
+)
+
+)
+
+
+
+(deffacts inizializza-row
+  (contatore-righe (x 0) (conta 10))
+  (contatore-righe (x 1) (conta 10))
+  (contatore-righe (x 2) (conta 10))
+  (contatore-righe (x 3) (conta 10))
+  (contatore-righe (x 4) (conta 10))
+  (contatore-righe (x 5) (conta 10))
+  (contatore-righe (x 6) (conta 10))
+  (contatore-righe (x 7) (conta 10))
+  (contatore-righe (x 8) (conta 10))
+  (contatore-righe (x 9) (conta 10))
+)
+(defrule contatore-row (declare (salience 101))
+
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  ?ac <- (contatore-righe (x ?x) (conta ?conta&:(> ?conta 0))) 
+  (not (palle ?x ?y))
+  =>
+  (assert (palle ?x ?y))
+  ;(printout t "cella: " ?x " - " ?y " cont: " ?c crlf)
+  (modify ?ac (x ?x) (conta (- ?conta 1)))
+)
+
+(defrule fill-col-with-generic (declare (salience 47))
+
+  ;; Match il fatto della riga
+  (actual-boat-per-col (col ?r) (num ?n))
+  (actual-boat-per-col (col ?r) (num ?n&:(> ?n 0)))
   (test (= ?n 
            (length$ 
              (find-all-facts ((?c agent-cell))
-               (and (eq ?c:x ?r)
+               (and (eq ?c:y ?r)
                     (eq ?c:content unknown))))))
 
   =>
 
-  (printout t "ENTRATO! riga:" ?r "- numero per riga:" ?n "" crlf)
+  (printout t "ENTRATO! colonna:" ?r "- numero per riga:" ?n "" crlf)
   ;; Modifica tutte le celle unknown sulla riga ?r
   (bind ?cells 
     (find-all-facts ((?c agent-cell))
-      (and (eq ?c:x ?r)
+      (and (eq ?c:y ?r)
            (eq ?c:content unknown))))
 
   (foreach ?cell ?cells
@@ -835,15 +888,10 @@
   (bind ?y (fact-slot-value ?cell y))
   (printout t "cella:" ?cell "" crlf)
   (assert (agent-guess ?x ?y))
-  
+
   (cancella-tutte-le-copie ?x ?y)
     (assert (agent-cell (x ?x) (y ?y) (content generic)))
-    
-    )
-
-)
-
-
+  ))
 
 
 
@@ -913,35 +961,7 @@
 )
 
 
-(defrule fill-col-with-generic (declare (salience 47))
 
-  ;; Match il fatto della riga
-  (actual-boat-per-col (col ?r) (num ?n))
-  (actual-boat-per-col (col ?r) (num ?n&:(> ?n 0)))
-  (test (= ?n 
-           (length$ 
-             (find-all-facts ((?c agent-cell))
-               (and (eq ?c:y ?r)
-                    (eq ?c:content unknown))))))
-
-  =>
-
-  (printout t "ENTRATO! colonna:" ?r "- numero per riga:" ?n "" crlf)
-  ;; Modifica tutte le celle unknown sulla riga ?r
-  (bind ?cells 
-    (find-all-facts ((?c agent-cell))
-      (and (eq ?c:y ?r)
-           (eq ?c:content unknown))))
-
-  (foreach ?cell ?cells
-  (bind ?x (fact-slot-value ?cell x))
-  (bind ?y (fact-slot-value ?cell y))
-  (printout t "cella:" ?cell "" crlf)
-  (assert (agent-guess ?x ?y))
-
-  (cancella-tutte-le-copie ?x ?y)
-    (assert (agent-cell (x ?x) (y ?y) (content generic)))
-  ))
 ;----------------------------------------------
 ; REGOLA CHE DICE CHE SE MI TROVO SU UN BORDO ED HO UN MIDDLE 
 ; POSSO DIRE CHE I DUE PEZZI NEL LATO POSSIBILE
@@ -1079,7 +1099,7 @@
   (assert (agent-guess (- ?x 1) ?y ))
   (assert (agent-guess (+ ?x 1) ?y ))
 
-(cancella-tutte-le-copie (- ?x 1) ?y)
+  (cancella-tutte-le-copie (- ?x 1) ?y)
   (cancella-tutte-le-copie (+ ?x 1) ?y)
 
 
@@ -1095,9 +1115,7 @@
 (not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content middle))
-    (not(closes x? y?))
     =>
-    (assert (closes x? y?))
     ; Coordinate adiacenti e secondarie
     (bind ?y-left (- ?y 1))
     (bind ?y-right (+ ?y 1))
@@ -1224,13 +1242,14 @@
    ?r <- (actual-boat-per-row (row ?x) (num ?n1))
    ?c <- (actual-boat-per-col (col ?y) (num ?n2))
    (test (or (> ?n1 0) (> ?n2 0)))
+   (not  (ciao ?x ?y))
    =>
    (bind ?new-n1 (- ?n1 1))
    (bind ?new-n2 (- ?n2 1))
 
 (retract ?r)
 (retract ?c)
-
+(assert (ciao ?x ?y))
 (assert (actual-boat-per-row (row ?x) (num ?new-n1)))
 (assert (actual-boat-per-col (col ?y) (num ?new-n2)))
    
@@ -1277,27 +1296,27 @@
 )
 
 
-(defrule AGENT::guess-control
-  (declare (salience  -10)) ; priorità bassissima, viene eseguita solo se non c'è altro
-  (agent-guess ?x ?y)
-  =>
-  (printout t "🔁 CI SONO DELLE AZIONI guess DA ESEGUIRE, passo a PROB..." crlf)
-  (focus PROB)
-)
+; (defrule AGENT::guess-control
+;   (declare (salience  -10)) ; priorità bassissima, viene eseguita solo se non c'è altro
+;   (agent-guess ?x ?y)
+;   =>
+;   (printout t "🔁 CI SONO DELLE AZIONI guess DA ESEGUIRE, passo a PROB..." crlf)
+;   (focus PROB)
+; )
 
 
 
 
-(defrule AGENT::idle-when-no-more-rules
-  (declare (salience 10)) ; priorità bassissima, viene eseguita solo se non c'è altro
-  (status (step ?s) (currently running))
+; (defrule AGENT::idle-when-no-more-rules
+;   (declare (salience 10)) ; priorità bassissima, viene eseguita solo se non c'è altro
+;   (status (step ?s) (currently running))
   
-  =>
-  (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
-  (assert (clear-probability))
-  (assert (letscalc))
-  (focus PROB)
-)
+;   =>
+;   (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
+;   (assert (clear-probability))
+;   (assert (letscalc))
+;   (focus PROB)
+; )
 
 
 (defrule AGENT::idle-when-other-modules-rules
@@ -1305,7 +1324,7 @@
   (status (step ?s) (currently running))
  (stop)
   =>
-  ;(assert(start-guessing))
+  (assert(start-guessing))
   (assert (stop-calc))
   (printout t "🔁 NON HO PIU INFO UTILI, PROVO AD INDOVINARE..." crlf)
   (assert (agent-solve))
