@@ -23,18 +23,34 @@
    (numeroguessed (num 20))
 )
 
+(defrule basta-fire
+(declare (salience 1))
+(numerofire (num 0))
+?c <-(fire-possibile)
+=>
+(assert (stop))
+
+)
+
 
 
 (defrule send-action-fire
   (declare (salience 100))
   ?nf <- (numerofire (num ?c&:(neq ?c 0)))
   (status (step ?s) (currently running))
-  (agent-fire ?x ?y)
+  ?af <- (agent-fire ?x ?y)
   =>
+  
   (modify ?nf (num (- ?c 1)))
+  (do-for-all-facts ((?f probability-cell)) TRUE
+  (retract ?f)
+  )
   (assert (exec (step ?s) (action fire) (x ?x) (y ?y)))
   (assert (copiazionefired ?x ?y))
-  (pop-focus)
+  (retract ?af)
+  (printout t "passo il controllo a env" crlf)
+  (focus ENV)
+  
 )
 
 
@@ -59,7 +75,7 @@
 (agent-solve)
 => 
 (assert (exec (step ?s) (action solve)))
-(pop-focus)
+(focus ENV)
 )
 
 (defrule end-of-fire (declare (salience 10))
@@ -95,6 +111,7 @@
   )
 (focus ENV)
 )
+
 
 
 

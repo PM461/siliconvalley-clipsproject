@@ -13,21 +13,23 @@
 
 
 (defrule clear-probability-cells
-  (declare (salience 150))
-  ?trigger <- (clear-probability) ; un fatto che attiva la regola
+  (declare (salience 10))
+  ; un fatto che attiva la regola
   =>
   (do-for-all-facts ((?f probability-cell)) TRUE
     (retract ?f)
   )
-  (retract ?trigger)
+  ;(retract ?trigger)
   (printout t "Tutte le celle di probabilità sono state rimosse." crlf)
 )
 
 
 (defrule PROB::calculate-probabilities
-   (declare (salience 100))
+   (declare (salience 5))
+   ?lc<-(letscalc)
    (status (step ?s) (currently running))
    =>
+(retract ?lc)
    ; Trova tutte le celle che non sono ancora state colpite
    (bind ?cells (find-all-facts ((?c agent-cell)) (eq ?c:content unknown)))
 
@@ -79,14 +81,15 @@
       )
 
       ; Debug: stampa i valori intermedi
-      (printout t "Cella [" ?x "," ?y "] - row-num: " ?row-num " col-num: " ?col-num 
-                " occ-row: " ?occupied-row-cells " occ-col: " ?occupied-col-cells 
-                " denom: " ?denominator " prob: " ?prob crlf)
+      ;(printout t "Cella [" ?x "," ?y "] - row-num: " ?row-num " col-num: " ?col-num 
+       ;         " occ-row: " ?occupied-row-cells " occ-col: " ?occupied-col-cells 
+        ;        " denom: " ?denominator " prob: " ?prob crlf)
 
       ; Aggiorna o crea probability-cell
       (bind ?found (find-all-facts ((?f probability-cell)) (and (eq ?f:x ?x) (eq ?f:y ?y))))
      
          (assert (probability-cell (x ?x) (y ?y) (prob ?prob)))
+         (assert (best))
       
    )
 )
@@ -96,9 +99,15 @@
 
 
 (defrule PROB::select-best-target
-  (declare (salience 90))
+
+  (declare (salience 0))
+  ?b <-(best)
+  (fire-possibile)
+  (not (stop))
   (status (step ?s) (currently running))
   =>
+(retract ?b)
+
   (bind ?max-prob 0.0)
   (bind ?target-x -1)
   (bind ?target-y -1)
@@ -117,23 +126,18 @@
     (assert (agent-fire ?target-x ?target-y))
     (printout t "Sparo alla casella (" ?target-x "," ?target-y ") con probabilità " ?max-prob crlf)
     (retract ?best-fact)
-    (focus CONTROL)
+    
+    
     
   else
     (printout t "Nessuna cella valida trovata!" crlf)
   )
 
   
-  (printout t "↩️  STRATEGY ha finito, torno ad AGENT..." crlf)
-  (focus AGENT)
+  (printout t "↩️  passo il controllo a control" crlf)
+  
+  (focus CONTROL )
 )
 
 
-(defrule back-to-agent
-   (declare (salience -1000))
-   (strategy-step done)
-   =>
-   (printout t "↩️  STRATEGY ha finito, torno ad AGENT..." crlf)
-   (assert (init-calc-counters (status needed)))
-   (focus AGENT)
-)
+

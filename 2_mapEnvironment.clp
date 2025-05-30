@@ -109,17 +109,12 @@
 (boat-hor (name sub8) (x 5) (ys 2) (size 1) (status safe))
 (boat-hor (name nav9) (x 8) (ys 1 2 3 4 ) (size 4) (status safe safe safe safe ))
 (boat-hor (name nav10) (x 9) (ys 7 8 9 ) (size 3) (status safe safe safe ))
-(k-cell (x 2) (y 2) (content water))
-(k-cell (x 4) (y 5) (content middle))
-(k-cell (x 1) (y 3) (content left))
-(k-cell (x 1) (y 5) (content water))
-(k-cell (x 9) (y 8) (content middle))
 
-(k-cell (x 8) (y 5) (content water))
-(k-cell (x 8) (y 6) (content water))
-(k-cell (x 8) (y 7) (content water))
-(k-cell (x 8) (y 8) (content water))
-(k-cell (x 8) (y 9) (content water))
+
+(k-cell (x 1) (y 3) (content left))
+(k-cell (x 4) (y 5) (content middle))
+(k-cell (x 1) (y 1) (content water))
+
 
 
 (k-per-row (row 0) (num 2))

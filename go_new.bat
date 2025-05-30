@@ -7,8 +7,8 @@
 (load 4_probability.clp)
 (load 5_actionControl.clp)
 (reset)
-(run)
-(facts AGENT)
+
+
 
 
 

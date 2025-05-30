@@ -8,3 +8,4 @@
 (run 2)
 (focus ENV)
 (facts)
+(focus MAIN ENV AGENT PROB CONTROL)

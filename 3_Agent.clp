@@ -64,7 +64,7 @@
    (init-calc-counters (status needed))
    (init-calc-counters-cell (status needed))
    (init-calc-counters-lines (status needed))
-
+    (fire-possibile)
 )
 
 (defrule inizializzazione 
@@ -108,31 +108,48 @@
 )
 
 
+(deffunction cancella-tutte-le-copie (?x ?y)
+  (do-for-all-facts ((?f agent-cell)) TRUE
+    (if (and (= ?f:x ?x)
+             (= ?f:y ?y))
+        then (retract ?f))))
+
 (defrule copia-azione-missed
 (declare (salience 20))
    
-   
+   (fire-possibile)
    (k-cell (x ?x) (y ?y) (content water))
-   ?fa <- (agent-cell (x ?x) (y ?y))
+   
    (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
 
    =>
-      (retract ?fa )
+        (cancella-tutte-le-copie ?x ?y)
       (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+      (printout t "Azione copiata: ("  ?x ","  ?y ") -> status fired con content = water"  crlf)
       
   
 )
 
+(defrule is-stop
+(declare (salience 5 ))
+(stop)
+?fp<-(fire-possibile)
+=>
+(retract ?fp)
+)
+
 (defrule copia-azione-fired
-  (declare (salience 21))
-  (copiazionefired ?target-x ?target-y)
-  (k-cell (x ?target-x) (y ?target-y) (content ?c&:(neq ?c water)))
+
   
+  (k-cell (x ?target-x) (y ?target-y) (content ?c&:(neq ?c water)))
+  ?caf<-(copiazionefired ?target-x ?target-y)
   
   ?fa <- (agent-cell (x ?target-x) (y ?target-y))
   (not (agent-cell (x ?target-x) (y ?target-y) (status fired)))
   =>
-  (retract ?fa)
+  (assert (letscalc))
+  (retract ?caf)
+  (cancella-tutte-le-copie ?target-x ?target-y)
   (assert (agent-cell (x ?target-x) (y ?target-y) (content ?c) (status fired)))
   (printout t "Azione copiata: ("  ?target-x ","  ?target-y ") -> status fired con content = " ?c crlf))
 
@@ -153,6 +170,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 0)))
 =>
+  (cancella-tutte-le-copie ?r 0)
   (assert (agent-cell (x ?r) (y 0) (content water) (status missed)))
 )
 
@@ -161,6 +179,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 1)))
 =>
+(cancella-tutte-le-copie ?r 1)
   (assert (agent-cell (x ?r) (y 1) (content water) (status missed)))
 )
 
@@ -169,6 +188,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 2)))
 =>
+(cancella-tutte-le-copie ?r 2)
   (assert (agent-cell (x ?r) (y 2) (content water) (status missed)))
 )
 
@@ -185,6 +205,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 3)))
 =>
+(cancella-tutte-le-copie ?r 3)
   (assert (agent-cell (x ?r) (y 3) (content water) (status missed)))
 )
 
@@ -193,6 +214,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 4)))
 =>
+(cancella-tutte-le-copie ?r 4)
   (assert (agent-cell (x ?r) (y 4) (content water) (status missed)))
 )
 
@@ -201,6 +223,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 5)))
 =>
+(cancella-tutte-le-copie ?r 5)
   (assert (agent-cell (x ?r) (y 5) (content water) (status missed)))
 )
 
@@ -209,6 +232,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 6)))
 =>
+(cancella-tutte-le-copie ?r 6)
   (assert (agent-cell (x ?r) (y 6) (content water) (status missed)))
 )
 
@@ -217,6 +241,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 7)))
 =>
+(cancella-tutte-le-copie ?r 7)
   (assert (agent-cell (x ?r) (y 7) (content water) (status missed)))
 )
 
@@ -225,6 +250,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 8)))
 =>
+(cancella-tutte-le-copie ?r 8)
   (assert (agent-cell (x ?r) (y 8) (content water) (status missed)))
 )
 
@@ -233,6 +259,7 @@
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 9)))
 =>
+(cancella-tutte-le-copie ?r 9)
   (assert (agent-cell (x ?r) (y 9) (content water) (status missed)))
 )
 
@@ -244,6 +271,7 @@
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 0) (y ?c)))
 =>
+(cancella-tutte-le-copie 0 ?c)
   (assert (agent-cell (x 0) (y ?c) (content water) (status missed)))
 )
 
@@ -252,6 +280,7 @@
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 1) (y ?c)))
 =>
+(cancella-tutte-le-copie 1 ?c)
   (assert (agent-cell (x 1) (y ?c) (content water) (status missed)))
 )
 
@@ -260,6 +289,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 2) (y ?c)))
 =>
+(cancella-tutte-le-copie 2 ?c)
   (assert (agent-cell (x 2) (y ?c) (content water) (status missed)))
 )
 
@@ -268,6 +298,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 3) (y ?c)))
 =>
+(cancella-tutte-le-copie 3 ?c)
   (assert (agent-cell (x 3) (y ?c) (content water) (status missed)))
 )
 
@@ -276,6 +307,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 4) (y ?c)))
 =>
+(cancella-tutte-le-copie 4 ?c)
   (assert (agent-cell (x 4) (y ?c) (content water) (status missed)))
 )
 
@@ -284,6 +316,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 5) (y ?c)))
 =>
+(cancella-tutte-le-copie 5 ?c)
   (assert (agent-cell (x 5) (y ?c) (content water) (status missed)))
 )
 
@@ -292,6 +325,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 6) (y ?c)))
 =>
+(cancella-tutte-le-copie 6 ?c)
   (assert (agent-cell (x 6) (y ?c) (content water) (status missed)))
 )
 
@@ -300,6 +334,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 7) (y ?c)))
 =>
+(cancella-tutte-le-copie 7 ?c)
   (assert (agent-cell (x 7) (y ?c) (content water) (status missed)))
 )
 
@@ -308,6 +343,7 @@
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 8) (y ?c)))
 =>
+(cancella-tutte-le-copie 8 ?c)
   (assert (agent-cell (x 8) (y ?c) (content water) (status missed)))
 )
 
@@ -316,6 +352,7 @@
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 9) (y ?c)))
 =>
+(cancella-tutte-le-copie 9 ?c)
   (assert (agent-cell (x 9) (y ?c) (content water) (status missed)))
 )
 
@@ -334,6 +371,7 @@
   (test (>= (- ?x 1) 0))      ; sopra
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
+(cancella-tutte-le-copie (- ?x 1) (- ?y 1))
   (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale alto-destra
@@ -344,6 +382,7 @@
   (test (>= (- ?x 1) 0))      ; sopra
   (test (<= (+ ?y 1) 9))      ; destra
   =>
+  (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
   (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-sinistra
@@ -354,6 +393,7 @@
   (test (<= (+ ?x 1) 9))      ; sotto
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
+(cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
   (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-destra
@@ -364,6 +404,7 @@
   (test (<= (+ ?x 1) 9))      ; sotto
   (test (<= (+ ?y 1) 9))      ; destra
 =>
+(cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
   (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;___________________________________________________
@@ -382,6 +423,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?x 1) 0)) 
   =>
+  (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water left
@@ -390,6 +432,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?y 1) 0))
   =>
+  (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;water destra
@@ -398,6 +441,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (<= (+ ?y 1) 9))   
   =>
+  (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;_____________________________________________________
@@ -408,6 +452,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?y 1) 9))
   =>
+  (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;water sinistra
@@ -416,6 +461,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (>= (- ?y 1) 0))
   =>
+  (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;water sotto
@@ -424,6 +470,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?x 1) 9))
   =>
+  (cancella-tutte-le-copie (+ ?x 1) ?y)
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 
@@ -435,6 +482,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?x 1) 0)) 
   =>
+  (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sotto
@@ -443,6 +491,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (<= (+ ?x 1) 9))
   =>
+  (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sinistra
@@ -451,6 +500,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?y 1) 0))  
   =>
+   (cancella-tutte-le-copie ?x (- ?y 1) )
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;___________________________________________________
@@ -461,6 +511,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (>= (- ?x 1) 0)) 
   =>
+   (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sotto
@@ -469,6 +520,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?x 1) 9))
   =>
+   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water destra
@@ -477,6 +529,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?y 1) 9))   
   =>
+  (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;_____________________________________________________
@@ -487,6 +540,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?x 1) 0)) 
   =>
+  (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed))) ; sopra
 )
 ;water sotto
@@ -495,6 +549,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?x 1) 9))
   =>
+  (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed))) ; sotto
 )
 ;water destra
@@ -503,6 +558,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?y 1) 9))   
   =>
+  (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed))) ; destra
 )
 ;water sinistra
@@ -511,6 +567,7 @@
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?y 1) 0))  
   =>
+  (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;__________________________________________________
@@ -522,6 +579,8 @@
 (defrule AGENT::mark-left-piece (declare (salience 5))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content left))
+    (test (bind ?yr (+ ?y 1)))
+    
     (test (not (any-factp ((?c agent-cell))
                 (and (eq ?c:x ?x)
                      (eq ?c:y (+ ?y 1))
@@ -530,13 +589,17 @@
                          (eq ?c:content generic))))))
     =>
        (assert (agent-guess ?x (+ ?y 1)))
-    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed)))
+       (cancella-tutte-le-copie ?x (+ ?y 1))
+    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic)))
 
 )
 
 (defrule AGENT::mark-right-piece (declare (salience 5))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content right))
+
+    (test (bind ?yl (- ?y 1)))
+   
     (test (not (any-factp ((?c agent-cell))
                 (and (eq ?c:x ?x)
                      (eq ?c:y (- ?y 1))
@@ -545,12 +608,18 @@
                          (eq ?c:content generic))))))
     =>
        (assert (agent-guess ?x (- ?y 1)))
-    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed)))
+       (cancella-tutte-le-copie ?x (- ?y 1))
+
+    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic)))
 )
 
 (defrule AGENT::mark-top-piece (declare (salience 5))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content top))
+
+(test (bind ?xl (+ ?x 1)))
+    
+
     (test (not (any-factp ((?c agent-cell))
                 (and (eq ?c:x (+ ?x 1))
                      (eq ?c:y ?y)
@@ -559,12 +628,17 @@
                          (eq ?c:content generic))))))
     =>
     (assert (agent-guess (+ ?x 1) ?y))
-    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed)))
+    (cancella-tutte-le-copie (+ ?x 1) ?y)
+    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic)))
 )
 
 (defrule AGENT::mark-bottom-piece (declare (salience 5))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content bot))
+
+(test (bind ?xr (- ?x 1)))
+    ?ac <- (agent-cell (x ?xr) (y ?y))
+
     (test (not (any-factp ((?c agent-cell))
                 (and (eq ?c:x (- ?x 1))
                      (eq ?c:y ?y)
@@ -573,7 +647,8 @@
                          (eq ?c:content generic))))))
     =>
        (assert (agent-guess (- ?x 1) ?y))
-    (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed)))
+       (cancella-tutte-le-copie ?xr ?y)
+    (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic)))
 )
 
 ;----------------------------------------------
@@ -585,13 +660,13 @@
     (agent-cell (x ?x) (y ?y) (content left))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
     (test (= ?y1 (+ ?y 1))) ; destra
-    (test (bind ?y2 (+ ?y 2)))
-    (or
-      (agent-cell (x ?x) (y ?y2) (content water))
-      (not (agent-cell (x ?x) (y ?y2)))
-    )   
+    (agent-cell (x ?x) (y ?y2) (content water))
+    (test (= ?y2 (+ ?y 2)))
+    
+      
+     
     =>
-    (assert (agent-guess ?x ?y))
+    (assert (agent-guess ?x ?y1))
     (modify ?opp (content right) )
 )
 
@@ -599,14 +674,16 @@
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content right))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
-    (test (= ?y1 (- ?y 1))) ; destra
-    (test (bind ?y2 (- ?y 2)))
-    (or
-      (agent-cell (x ?x) (y ?y2) (content water))
-      (not (agent-cell (x ?x) (y ?y2)))
-    )   
+    (test (= ?y1 (- ?y 1)))
+     ; destra
+     (agent-cell (x ?x) (y ?y2) (content water))
+    (test (= ?y2 (- ?y 2)))
+    
+      
+    
     =>
-    (assert (agent-guess ?x ?y))
+    
+    (assert (agent-guess ?x ?y1))
     (modify ?opp (content left) )
 )
 
@@ -615,13 +692,14 @@
     (agent-cell (x ?x) (y ?y) (content top))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
     (test (= ?x1 (+ ?x 1)))
-    (test (bind ?x2 (+ ?x 2)))
-    (or
-      (agent-cell (x ?x2) (y ?y) (content water))
-      (not (agent-cell (x ?x2) (y ?y)))
-    )   
+    (agent-cell (x ?x2) (y ?y) (content water))
+    (test (= ?x2 (+ ?x 2)))
+   
+     
+      
+      
     =>
-    (assert (agent-guess ?x ?y))
+    (assert (agent-guess ?x1 ?y))
     (modify ?opp (content bot) )
 )
 
@@ -630,13 +708,14 @@
     (agent-cell (x ?x) (y ?y) (content bot))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
     (test (= ?x1 (- ?x 1)))
-    (test (bind ?x2 (- ?x 2)))
-    (or
-      (agent-cell (x ?x2) (y ?y) (content water))
-      (not (agent-cell (x ?x2) (y ?y)))
-    )   
+    (agent-cell (x ?x2) (y ?y) (content water))
+    (test (= ?x2 (- ?x 2)))
+    
+      
+      
+      
     =>
-    (assert (agent-guess ?x ?y))
+    (assert (agent-guess ?x1 ?y))
     (modify ?opp (content top) )
 )
 
@@ -664,7 +743,76 @@
   (bind ?y (fact-slot-value ?cell y))
   (printout t "cella:" ?cell "" crlf)
   (assert (agent-guess ?x ?y))
-    (modify ?cell (content generic))))
+  
+  (cancella-tutte-le-copie ?x ?y)
+    (assert (agent-cell (x ?x) (y ?y) (content generic)))
+    
+    )
+
+)
+
+
+
+(defrule AGENT::mark-opposite-left-piece-border (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content left))
+    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+    (test (= ?y1 (+ ?y 1))) 
+    (test (> (+ ?y 2) 9))
+    
+      
+     
+     
+    =>
+    (assert (agent-guess ?x ?y1))
+    (modify ?opp (content right) )
+)
+
+(defrule AGENT::mark-opposite-right-piece-border (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content right))
+    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+    (test (= ?y1 (- ?y 1)))
+     ; destra
+    (test (< (- ?y 2) 0))
+    
+    =>
+        (printout t " y:" ?y crlf)
+      (printout t " y1:" ?y1 crlf)
+    (assert (agent-guess ?x ?y1))
+    (modify ?opp (content left) )
+)
+
+(defrule AGENT::mark-opposite-bottom-piece-border (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content bot))
+    ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
+    (test (= ?x1 (- ?x 1)))
+    (test (> (- ?x 2) 9))
+    
+      
+      
+      
+    =>
+    (assert (agent-guess ?x1 ?y))
+    (modify ?opp (content top) )
+)
+
+(defrule AGENT::mark-opposite-top-piece-border (declare (salience 5))
+    (status (step ?s) (currently running))
+    (agent-cell (x ?x) (y ?y) (content top))
+    ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
+    (test (= ?x1 (+ ?x 1)))
+    
+    (test (< (+ ?x 2) 0))
+   
+     
+      
+      
+    =>
+    (assert (agent-guess ?x1 ?y))
+    (modify ?opp (content bot) )
+)
 
 
 (defrule fill-col-with-generic (declare (salience 100))
@@ -690,8 +838,10 @@
   (bind ?y (fact-slot-value ?cell y))
   (printout t "cella:" ?cell "" crlf)
   (assert (agent-guess ?x ?y))
-    (modify ?cell (content generic))))
 
+  (cancella-tutte-le-copie ?x ?y)
+    (assert (agent-cell (x ?x) (y ?y) (content generic)))
+  ))
 ;----------------------------------------------
 ; REGOLA CHE DICE CHE SE MI TROVO SU UN BORDO ED HO UN MIDDLE 
 ; POSSO DIRE CHE I DUE PEZZI NEL LATO POSSIBILE
@@ -701,7 +851,8 @@
 
 (defrule AGENT::identify-boats-at-border-with-middle (declare (salience 5))
     (status (step ?s) (currently running))
-    ?acell <- (agent-cell (x ?x) (y ?y) (content middle) (status none))
+    ?acell <- (agent-cell (x ?x) (y ?y) (content middle) (boat-checked FALSE) )
+    
     ; Verifica se siamo su un bordo (0 o 9 in x o y)
     (or (test (or (= ?y 0) (= ?y 9)))  ; Bordo sinistro o destro
         (test (or (= ?x 0) (= ?x 9)))) ; Bordo superiore o inferiore
@@ -721,7 +872,8 @@
                        (eq ?cell:content middle)))))
         then
          (assert (agent-guess ?x ?y-left))
-        (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-left) (content generic) (status guessed))))
+        (cancella-tutte-le-copie ?x (- ?y 1))
+        (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-left) (content generic))))
         (printout t "✅ SINISTRA non-middle o assente: (" ?x "," ?y-left ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
     )
@@ -734,7 +886,8 @@
                        (eq ?cell:content middle)))))
         then
         (assert (agent-guess ?x ?y-right))
-        (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-right) (content generic) (status guessed))))
+        (cancella-tutte-le-copie ?x (+ ?y 1))
+        (bind ?new-fact(assert (agent-cell (x ?x) (y ?y-right) (content generic))))
         (printout t "✅ DESTRA non-middle o assente: (" ?x "," ?y-right ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
     )
@@ -747,7 +900,8 @@
                        (eq ?cell:content middle)))))
         then
         (assert (agent-guess ?x-up ?y))
-        (bind ?new-fact(assert (agent-cell (x ?x-up) (y ?y) (content generic) (status guessed))))
+        (cancella-tutte-le-copie (- ?x 1) ?y)
+        (bind ?new-fact(assert (agent-cell (x ?x-up) (y ?y) (content generic))))
         (printout t "✅ SOPRA non-middle o assente: (" ?x-up "," ?y ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
     )
@@ -760,14 +914,15 @@
                        (eq ?cell:content middle)))))
         then
         (assert (agent-guess ?x-down ?y))
-        (bind ?new-fact(assert (agent-cell (x ?x-down) (y ?y) (content generic) (status guessed))))
+        (cancella-tutte-le-copie (+ ?x 1) ?y)
+        (bind ?new-fact(assert (agent-cell (x ?x-down) (y ?y) (content generic))))
         (printout t "✅ SOTTO non-middle o assente: (" ?x-down "," ?y ")" crlf)
         (printout t "📦 Fatto creato: " (fact-slot-value ?new-fact content) crlf)
     )
 
 
     
-    (modify ?acell (status guessed))
+    (modify ?acell  (boat-checked TRUE))
     (printout t "Identified possible boat pieces near middle at border (" ?x "," ?y ")" crlf)
 )
 
@@ -789,13 +944,18 @@
           (and (= ?x2 (- ?x 1)) (= ?y2 ?y)) ; sopra
         )
   )
+  
   =>
   (bind ?yl (- ?y 1))
   (bind ?yr (+ ?y 1))
   (assert (agent-guess ?x ?yl))
   (assert (agent-guess ?x ?yr))
-  (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic) (status guessed)))
-  (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic) (status guessed)))  
+
+ (cancella-tutte-le-copie ?x (- ?y 1))
+  (cancella-tutte-le-copie ?x (+ ?y 1))
+
+  (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic)))
+  (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic)))  
 )
 
 (defrule identify-boats-near-middle-left-right (declare (salience 5))
@@ -811,11 +971,17 @@
           (and (= ?x2 ?x) (= ?y2 (- ?y 1))) ; sinistra
         )
   )
+
   =>
   (assert (agent-guess (- ?x 1) ?y ))
   (assert (agent-guess (+ ?x 1) ?y ))
-  (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic) (status guessed)))
-  (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic) (status guessed)))
+
+(cancella-tutte-le-copie (- ?x 1) ?y)
+  (cancella-tutte-le-copie (+ ?x 1) ?y)
+
+
+  (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic)))
+  (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic)))
 )
 ;-----------------------------------------------
 ;SE UNA BARCA COLLEGATA AD UN ALTRO PEZZO
@@ -826,6 +992,7 @@
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content middle))
     =>
+    
     ; Coordinate adiacenti e secondarie
     (bind ?y-left (- ?y 1))
     (bind ?y-right (+ ?y 1))
@@ -856,8 +1023,11 @@
                            (= ?cell:y ?y-left)
                            (eq ?cell:content generic))
         (assert (agent-guess ?cell:x ?cell:y))
-        (modify ?cell (content left) (status guessed)))
+        (cancella-tutte-le-copie ?cell:x ?cell:y)
+        (assert (agent-cell (x ?x ) (y ?y-left) (content left))))
+        
     )
+    
 
     ; --- DESTRA ---
     (if (and 
@@ -879,7 +1049,8 @@
                            (= ?cell:y ?y-right)
                            (eq ?cell:content generic))
         (assert (agent-guess ?cell:x ?cell:y))                   
-        (modify ?cell (content right) (status guessed)))
+        (cancella-tutte-le-copie ?cell:x ?cell:y)
+        (assert (agent-cell (x ?x ) (y ?y-right) (content right)) ))
     )
 
     ; --- SOPRA ---
@@ -902,7 +1073,8 @@
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
         (assert (agent-guess ?cell:x ?cell:y))
-        (modify ?cell (content top) (status guessed)))
+        (cancella-tutte-le-copie ?cell:x ?cell:y)
+        (assert (agent-cell (x ?x-up ) (y ?y) (content top)) ))
     )
 
     ; --- SOTTO ---
@@ -925,7 +1097,8 @@
                            (= ?cell:y ?y)
                            (eq ?cell:content generic))
         (assert (agent-guess ?cell:x ?cell:y))
-        (modify ?cell (content bot) (status guessed)))
+        (cancella-tutte-le-copie ?cell:x ?cell:y)
+        (assert (agent-cell (x ?x-down ) (y ?y) (content bot)) ))
     )
 
     (printout t "➡️  Controllo completato per cella MIDDLE a bordo (" ?x "," ?y ")" crlf)
@@ -1009,6 +1182,7 @@
   =>
   (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
   (assert (clear-probability))
+  (assert (letscalc))
   (focus PROB)
 )
 
@@ -1018,10 +1192,21 @@
   (status (step ?s) (currently running))
   =>
   (assert(start-guessing))
-  (printout t "🔁 SEMBRA CHE SIA TUTTO FINITO, risolvo..." crlf)
+  
+  (printout t "🔁 NON HO PIU INFO UTILI, PROVO AD INDOVINARE..." crlf)
   (assert (agent-solve))
   (focus CONTROL)
 )
+
+(defrule set-done-when-nothing-left
+   (not (status (currently running)))
+   (not (some-other-fact))
+   =>
+   (assert (agent-solve))
+   (focus CONTROL)
+)
+
+
 
 
 
