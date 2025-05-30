@@ -49,13 +49,13 @@
   (assert (copiazionefired ?x ?y))
   (retract ?af)
   (printout t "passo il controllo a env" crlf)
-  (focus ENV)
+  (focus ENV AGENT)
   
 )
 
 
 
-(defrule send-action-guess  (declare (salience 100))
+(defrule send-action-guess  (declare (salience 10))
 ?nf <- (numeroguessed (num ?c&:(neq ?c 0)))
 (status (step ?s) (currently running))
 ?ag <- (agent-guess ?x ?y)
@@ -70,7 +70,7 @@
 )
 
 
-(defrule send-action-solve (declare (salience -10000))
+(defrule send-action-solve (declare (salience 0))
 (status (step ?s) (currently running))
 (agent-solve)
 => 
@@ -78,7 +78,7 @@
 (focus ENV)
 )
 
-(defrule end-of-fire (declare (salience 10))
+(defrule end-of-fire (declare (salience 9))
 (status (step ?s) (currently running))
 (start-guessing)
 

@@ -65,12 +65,13 @@
    (init-calc-counters-cell (status needed))
    (init-calc-counters-lines (status needed))
     (fire-possibile)
+   
 )
 
 (defrule inizializzazione 
 
 
-(declare (salience 20))
+(declare (salience 110))
    
    
     ?fa<-(init-calc-counters (status needed))
@@ -91,7 +92,7 @@
 
 
 (defrule inizializzazione-celle
-(declare (salience 20))
+(declare (salience 100))
    
    
    ?fa<-(init-calc-counters-cell (status needed))
@@ -115,9 +116,10 @@
         then (retract ?f))))
 
 (defrule copia-azione-missed
-(declare (salience 20))
-   
+(declare (salience 60))
+   ?caf<-(copiazionefired ?target-x ?target-y)
    (fire-possibile)
+   
    (k-cell (x ?x) (y ?y) (content water))
    
    (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
@@ -131,7 +133,7 @@
 )
 
 (defrule is-stop
-(declare (salience 5 ))
+(declare (salience -1 ))
 (stop)
 ?fp<-(fire-possibile)
 =>
@@ -139,7 +141,7 @@
 )
 
 (defrule copia-azione-fired
-
+(declare (salience 60))
   
   (k-cell (x ?target-x) (y ?target-y) (content ?c&:(neq ?c water)))
   ?caf<-(copiazionefired ?target-x ?target-y)
@@ -165,7 +167,8 @@
 
 
 
-(defrule mark-water-cell-y0 (declare (salience 20))
+(defrule mark-water-cell-y0 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 0)))
@@ -174,7 +177,8 @@
   (assert (agent-cell (x ?r) (y 0) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y1 (declare (salience 20))
+(defrule mark-water-cell-y1 (declare (salience 50))
+  (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 1)))
@@ -183,7 +187,8 @@
   (assert (agent-cell (x ?r) (y 1) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y2 (declare (salience 20))
+(defrule mark-water-cell-y2 (declare (salience 50))
+  (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 2)))
@@ -200,7 +205,8 @@
 ;   (modify ?c (x ?r) (y 2) (content water) (status missed))
 ; )
  
-(defrule mark-water-cell-y3 (declare (salience 20))
+(defrule mark-water-cell-y3 (declare (salience 50))
+  (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 3)))
@@ -209,7 +215,8 @@
   (assert (agent-cell (x ?r) (y 3) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y4 (declare (salience 20))
+(defrule mark-water-cell-y4 (declare (salience 50))
+ (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 4)))
@@ -218,7 +225,8 @@
   (assert (agent-cell (x ?r) (y 4) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y5 (declare (salience 20))
+(defrule mark-water-cell-y5 (declare (salience 50))
+  (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 5)))
@@ -227,7 +235,8 @@
   (assert (agent-cell (x ?r) (y 5) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y6 (declare (salience 20))
+(defrule mark-water-cell-y6 (declare (salience 50))
+ (not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 6)))
@@ -236,7 +245,8 @@
   (assert (agent-cell (x ?r) (y 6) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y7 (declare (salience 20))
+(defrule mark-water-cell-y7 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 7)))
@@ -245,7 +255,8 @@
   (assert (agent-cell (x ?r) (y 7) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y8 (declare (salience 20))
+(defrule mark-water-cell-y8 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 8)))
@@ -254,7 +265,8 @@
   (assert (agent-cell (x ?r) (y 8) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-y9 (declare (salience 20))
+(defrule mark-water-cell-y9 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-row (row ?r) (num 0))
   (not (agent-cell (x ?r) (y 9)))
@@ -266,7 +278,8 @@
 
 ;colonne
 
-(defrule mark-water-cell-x0 (declare (salience 20))
+(defrule mark-water-cell-x0 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 0) (y ?c)))
@@ -275,7 +288,8 @@
   (assert (agent-cell (x 0) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x1 (declare (salience 20))
+(defrule mark-water-cell-x1 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 1) (y ?c)))
@@ -284,7 +298,7 @@
   (assert (agent-cell (x 1) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x2 (declare (salience 20))
+(defrule mark-water-cell-x2 (declare (salience 50))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 2) (y ?c)))
@@ -293,7 +307,8 @@
   (assert (agent-cell (x 2) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x3 (declare (salience 20))
+(defrule mark-water-cell-x3 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 3) (y ?c)))
@@ -302,7 +317,8 @@
   (assert (agent-cell (x 3) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x4 (declare (salience 20))
+(defrule mark-water-cell-x4 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 4) (y ?c)))
@@ -311,7 +327,8 @@
   (assert (agent-cell (x 4) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x5 (declare (salience 20))
+(defrule mark-water-cell-x5 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 5) (y ?c)))
@@ -320,7 +337,8 @@
   (assert (agent-cell (x 5) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x6 (declare (salience 20))
+(defrule mark-water-cell-x6 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 6) (y ?c)))
@@ -329,7 +347,8 @@
   (assert (agent-cell (x 6) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x7 (declare (salience 20))
+(defrule mark-water-cell-x7 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 7) (y ?c)))
@@ -338,7 +357,8 @@
   (assert (agent-cell (x 7) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x8 (declare (salience 20))
+(defrule mark-water-cell-x8 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
 (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 8) (y ?c)))
@@ -347,7 +367,8 @@
   (assert (agent-cell (x 8) (y ?c) (content water) (status missed)))
 )
 
-(defrule mark-water-cell-x9 (declare (salience 20))
+(defrule mark-water-cell-x9 (declare (salience 50))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (actual-boat-per-col (col ?c) (num 0))
   (not (agent-cell (x 9) (y ?c)))
@@ -364,46 +385,59 @@
 ;_________________________________________________
 ;MARK WATER PER LE DIAGONALI
 ;diagonale alto-sinistra
-(defrule mark-diagonal-water-top-left (declare (salience 8))
+(defrule mark-diagonal-water-top-left (declare (salience 40))
+(not (stop-calc))
+
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag ?x ?y))
   (test (>= (- ?x 1) 0))      ; sopra
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
 (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
+(assert(diag ?x ?y))
   (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale alto-destra
-(defrule mark-diagonal-water-top-right (declare (salience 8))
+(defrule mark-diagonal-water-top-right (declare (salience 90))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag ?x ?y))
   (test (>= (- ?x 1) 0))      ; sopra
   (test (<= (+ ?y 1) 9))      ; destra
   =>
   (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
+  (assert(diag ?x ?y))
   (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-sinistra
-(defrule mark-diagonal-water-bot-left (declare (salience 8))
+(defrule mark-diagonal-water-bot-left (declare (salience 90))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag ?x ?y))
   (test (<= (+ ?x 1) 9))      ; sotto
   (test (>= (- ?y 1) 0))      ; sinistra
 =>
 (cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
+(assert(diag ?x ?y))
   (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
 )
 ;diagonale basso-destra
-(defrule mark-diagonal-water-bot-right (declare (salience 8))
+(defrule mark-diagonal-water-bot-right (declare (salience 40))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag ?x ?y))
   (test (<= (+ ?x 1) 9))      ; sotto
   (test (<= (+ ?y 1) 9))      ; destra
 =>
+(assert(diag ?x ?y))
 (cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
   (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -418,58 +452,76 @@
 ;___________________________________________________
 ;MARK WATER PER IL PEZZO TOP
 ;water sopra
-(defrule mark-top-water-up (declare (salience 7))
+(defrule mark-top-water-up (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?x 1) 0)) 
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water left
-(defrule mark-top-water-left (declare (salience 7))
+(defrule mark-top-water-left (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?y 1) 0))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;water destra
-(defrule mark-top-water-right (declare (salience 7))
+(defrule mark-top-water-right (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (<= (+ ?y 1) 9))   
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;_____________________________________________________
 ;MARK WATER PER IL PEZZO bottom
 ;water destra
-(defrule mark-bot-water-right (declare (salience 7))
+(defrule mark-bot-water-right (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?y 1) 9))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;water sinistra
-(defrule mark-bot-water-left (declare (salience 7))
+(defrule mark-bot-water-left (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (>= (- ?y 1) 0))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;water sotto
-(defrule mark-bot-water-down (declare (salience 7))
+(defrule mark-bot-water-down (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?x 1) 9))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y)
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -477,96 +529,125 @@
 ;____________________________________________________
 ;MARK WATER PER IL PEZZO LEFT 
 ;water sopra
-(defrule mark-left-water-up (declare (salience 7))
+(defrule mark-left-water-up (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?x 1) 0)) 
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sotto
-(defrule mark-left-water-down (declare (salience 7))
+(defrule mark-left-water-down (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (<= (+ ?x 1) 9))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sinistra
-(defrule mark-left-water-left (declare (salience 7))
+(defrule mark-left-water-left (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?y 1) 0))  
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
    (cancella-tutte-le-copie ?x (- ?y 1) )
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
 ;___________________________________________________
 ;MARK WATER PER IL PEZZO RIGHT
 ;water sopra
-(defrule mark-right-water-up (declare (salience 7))
+(defrule mark-right-water-up (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (>= (- ?x 1) 0)) 
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
    (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sotto
-(defrule mark-right-water-down (declare (salience 7))
+(defrule mark-right-water-down (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?x 1) 9))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
    (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water destra
-(defrule mark-right-water-right (declare (salience 7))
+(defrule mark-right-water-right (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
-  (test (<= (+ ?y 1) 9))   
+  (test (<= (+ ?y 1) 9))  
+  (not (mark x? y?)) 
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
 ;_____________________________________________________
 ;MARK WATER PER IL PEZZO sub
 ;water sopra
-(defrule mark-sub-water-up (declare (salience 7))
+(defrule mark-sub-water-up (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?x 1) 0)) 
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed))) ; sopra
 )
 ;water sotto
-(defrule mark-sub-water-down (declare (salience 7))
+(defrule mark-sub-water-down (declare (salience 30))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?x 1) 9))
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed))) ; sotto
 )
 ;water destra
-(defrule mark-sub-water-right (declare (salience 7))
+(defrule mark-sub-water-right (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?y 1) 9))   
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed))) ; destra
 )
 ;water sinistra
-(defrule mark-sub-water-left (declare (salience 7))
+(defrule mark-sub-water-left (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?y 1) 0))  
+  (not (mark x? y?))
   =>
+  (assert(mark ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -576,7 +657,8 @@
 ; SE BECCHIAMO UN ESTREMITà QUALSIASI SAPPIAMO CHE ESISTE
 ; UN PEZZO DI BARCA NELLA DIREZIONE OPPOSTA
 ;----------------------------------------------
-(defrule AGENT::mark-left-piece (declare (salience 5))
+(defrule AGENT::mark-left-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content left))
     (test (bind ?yr (+ ?y 1)))
@@ -594,7 +676,8 @@
 
 )
 
-(defrule AGENT::mark-right-piece (declare (salience 5))
+(defrule AGENT::mark-right-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content right))
 
@@ -613,7 +696,8 @@
     (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic)))
 )
 
-(defrule AGENT::mark-top-piece (declare (salience 5))
+(defrule AGENT::mark-top-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content top))
 
@@ -632,7 +716,8 @@
     (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic)))
 )
 
-(defrule AGENT::mark-bottom-piece (declare (salience 5))
+(defrule AGENT::mark-bottom-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content bot))
 
@@ -655,7 +740,8 @@
 ; SE BECCHIAMO UN ESTREMITà QUALSIASI CON UN GENERICO A FIANCO,
 ; SE LA CELLA SUCCESSIVA è WATER ALLORA IL GENERICO è L'ESTREMITà OPPOSTA
 ;----------------------------------------------
-(defrule AGENT::mark-opposite-left-piece (declare (salience 5))
+(defrule AGENT::mark-opposite-left-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content left))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
@@ -670,7 +756,8 @@
     (modify ?opp (content right) )
 )
 
-(defrule AGENT::mark-opposite-right-piece (declare (salience 5))
+(defrule AGENT::mark-opposite-right-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content right))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
@@ -687,7 +774,8 @@
     (modify ?opp (content left) )
 )
 
-(defrule AGENT::mark-opposite-top-piece (declare (salience 5))
+(defrule AGENT::mark-opposite-top-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content top))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
@@ -703,7 +791,8 @@
     (modify ?opp (content bot) )
 )
 
-(defrule AGENT::mark-opposite-bottom-piece (declare (salience 5))
+(defrule AGENT::mark-opposite-bottom-piece (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content bot))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
@@ -720,9 +809,12 @@
 )
 
 
-(defrule fill-row-with-generic (declare (salience 100))
+(defrule fill-row-with-generic (declare (salience 47))
+
   ;; Match il fatto della riga
   (actual-boat-per-row (row ?r) (num ?n))
+ 
+  
   (test (= ?n 
            (length$ 
              (find-all-facts ((?c agent-cell))
@@ -753,7 +845,10 @@
 
 
 
-(defrule AGENT::mark-opposite-left-piece-border (declare (salience 5))
+
+
+(defrule AGENT::mark-opposite-left-piece-border (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content left))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
@@ -768,7 +863,8 @@
     (modify ?opp (content right) )
 )
 
-(defrule AGENT::mark-opposite-right-piece-border (declare (salience 5))
+(defrule AGENT::mark-opposite-right-piece-border (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content right))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
@@ -783,7 +879,8 @@
     (modify ?opp (content left) )
 )
 
-(defrule AGENT::mark-opposite-bottom-piece-border (declare (salience 5))
+(defrule AGENT::mark-opposite-bottom-piece-border (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content bot))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
@@ -798,7 +895,8 @@
     (modify ?opp (content top) )
 )
 
-(defrule AGENT::mark-opposite-top-piece-border (declare (salience 5))
+(defrule AGENT::mark-opposite-top-piece-border (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content top))
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
@@ -815,9 +913,11 @@
 )
 
 
-(defrule fill-col-with-generic (declare (salience 100))
+(defrule fill-col-with-generic (declare (salience 47))
+
   ;; Match il fatto della riga
   (actual-boat-per-col (col ?r) (num ?n))
+  (actual-boat-per-col (col ?r) (num ?n&:(> ?n 0)))
   (test (= ?n 
            (length$ 
              (find-all-facts ((?c agent-cell))
@@ -849,7 +949,8 @@
 ;TO-DO
 ;----------------------------------------------
 
-(defrule AGENT::identify-boats-at-border-with-middle (declare (salience 5))
+(defrule AGENT::identify-boats-at-border-with-middle (declare (salience 100))
+(not (stop-calc))
     (status (step ?s) (currently running))
     ?acell <- (agent-cell (x ?x) (y ?y) (content middle) (boat-checked FALSE) )
     
@@ -931,7 +1032,8 @@
 ; ALLORA LA BARCA PROSEGUE NEL SULL'ASSE OPPOSTO 
 ; (ES.ACQUA SOPRA ALLORA LA BASCA PROSEGUE A DESTRA E SINISTRA)
 ;------------------------------------------------
-(defrule identify-boats-near-middle-top-bot (declare (salience 5))
+(defrule identify-boats-near-middle-top-bot (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content middle))
   (agent-cell (x ?x2) (y ?y2) (content water))
@@ -958,7 +1060,8 @@
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic)))  
 )
 
-(defrule identify-boats-near-middle-left-right (declare (salience 5))
+(defrule identify-boats-near-middle-left-right (declare (salience 30))
+(not (stop-calc))
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content middle))
   (agent-cell (x ?x2) (y ?y2) (content water))
@@ -988,11 +1091,13 @@
 ;è CIRCONDATA IN TUTTE LE SUE DIREZIONI DAL MARE è 
 ;UN ESTREMITà CORRISPONDENTE (LEFT BOTTOM ...)
 ;-----------------------------------------------
-(defrule AGENT::identify-boats-when-close-are-locked (declare (salience 4))
+(defrule AGENT::identify-boats-when-close-are-locked (declare (salience 30))
+(not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content middle))
+    (not(closes x? y?))
     =>
-    
+    (assert (closes x? y?))
     ; Coordinate adiacenti e secondarie
     (bind ?y-left (- ?y 1))
     (bind ?y-right (+ ?y 1))
@@ -1112,7 +1217,8 @@
 ;----------------------------------------------
 
 (defrule AGENT::remove-boat-from-col-row 
-(declare (salience 3))
+(declare (salience 50))
+(not (stop-calc))
    (status (step ?s) (currently running))
    ?cell <- (agent-cell (x ?x) (y ?y) (content ?d&:(and (neq ?d water) (neq ?d unknown))) (boat-checked FALSE))
    ?r <- (actual-boat-per-row (row ?x) (num ?n1))
@@ -1121,8 +1227,13 @@
    =>
    (bind ?new-n1 (- ?n1 1))
    (bind ?new-n2 (- ?n2 1))
-   (modify ?r (num ?new-n1))
-   (modify ?c (num ?new-n2))
+
+(retract ?r)
+(retract ?c)
+
+(assert (actual-boat-per-row (row ?x) (num ?new-n1)))
+(assert (actual-boat-per-col (col ?y) (num ?new-n2)))
+   
    (modify ?cell (boat-checked TRUE))
    (printout t "barche rimanenti riga " ?x " -> " ?new-n1 " barche rimanenti colonna " ?y " -> " ?new-n2 crlf)
 )
@@ -1153,11 +1264,12 @@
 ;----------------------------------------------
 (defrule print-what-i-know-since-the-beginning (declare (salience 0))
 	(agent-cell (x ?x) (y ?y) (content ?t) (status ?s) (boat-checked ?k))
+  (not (stop-calc))
 =>
 	(printout t "I know that cell [" ?x ", " ?y "] contains " ?t "." ?s " check "?k crlf)
 )
 
-(defrule create-missing-agent-cells (declare (salience 0))
+(defrule create-missing-agent-cells (declare (salience 15))
    ?c <- (coord x ?x y ?y)
    (not (agent-cell (x ?x) (y ?y)))
    =>
@@ -1166,7 +1278,7 @@
 
 
 (defrule AGENT::guess-control
-  (declare (salience -500)) ; priorità bassissima, viene eseguita solo se non c'è altro
+  (declare (salience  -10)) ; priorità bassissima, viene eseguita solo se non c'è altro
   (agent-guess ?x ?y)
   =>
   (printout t "🔁 CI SONO DELLE AZIONI guess DA ESEGUIRE, passo a PROB..." crlf)
@@ -1177,8 +1289,9 @@
 
 
 (defrule AGENT::idle-when-no-more-rules
-  (declare (salience -1000)) ; priorità bassissima, viene eseguita solo se non c'è altro
+  (declare (salience 10)) ; priorità bassissima, viene eseguita solo se non c'è altro
   (status (step ?s) (currently running))
+  
   =>
   (printout t "🔁 AGENT ha finito, passo a PROB..." crlf)
   (assert (clear-probability))
@@ -1190,9 +1303,10 @@
 (defrule AGENT::idle-when-other-modules-rules
   (declare (salience -10000)) ; priorità bassissima, viene eseguita solo se non c'è altro
   (status (step ?s) (currently running))
+ (stop)
   =>
-  (assert(start-guessing))
-  
+  ;(assert(start-guessing))
+  (assert (stop-calc))
   (printout t "🔁 NON HO PIU INFO UTILI, PROVO AD INDOVINARE..." crlf)
   (assert (agent-solve))
   (focus CONTROL)
