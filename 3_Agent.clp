@@ -385,64 +385,84 @@
 ;_________________________________________________
 ;MARK WATER PER LE DIAGONALI
 ;diagonale alto-sinistra
-(defrule mark-diagonal-water-top-left (declare (salience 40))
-(not (stop-calc))
+(defrule mark-diagonal-water-top-left
+   (declare (salience 40))
+   (not (stop-calc))
+   (status (step ?s) (currently running))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+   (not (diag-checked ?x ?y))
+   (not (diag ?x ?y))
+   (test (>= (- ?x 1) 0))
+   (test (>= (- ?y 1) 0))
+=>
+   (assert (diag ?x ?y))
+   (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
+   (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
+   (assert (diag-dir ?x ?y top-left))
+)
 
-  (status (step ?s) (currently running))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-  (not (diag ?x ?y))
-  (test (>= (- ?x 1) 0))      ; sopra
-  (test (>= (- ?y 1) 0))      ; sinistra
+(defrule mark-diagonal-water-top-right
+   (declare (salience 41))
+   (not (stop-calc))
+   (status (step ?s) (currently running))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+   (not (diag-checked ?x ?y))
+   (not (diag ?x ?y))
+   (test (>= (- ?x 1) 0))
+   (test (<= (+ ?y 1) 9))
 =>
-(assert(diag ?x ?y))
-(cancella-tutte-le-copie (- ?x 1) (- ?y 1))
-  (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
+   (assert (diag ?x ?y))
+   (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
+   (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+   (assert (diag-dir ?x ?y top-right))
 )
-;diagonale alto-destra
-(defrule mark-diagonal-water-top-right (declare (salience 41))
-(not (stop-calc))
-  (status (step ?s) (currently running))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-  (not (diag ?x ?y))
-  (test (>= (- ?x 1) 0))      ; sopra
-  (test (<= (+ ?y 1) 9))      ; destra
-  =>
-  (assert(diag ?x ?y))
-  (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
-  
-  (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
-)
-;diagonale basso-sinistra
-(defrule mark-diagonal-water-bot-left (declare (salience 40))
-(not (stop-calc))
-  (status (step ?s) (currently running))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-  (not (diag ?x ?y))
-  (test (<= (+ ?x 1) 9))      ; sotto
-  (test (>= (- ?y 1) 0))      ; sinistra
-=>
-(assert(diag ?x ?y))
-(cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
 
-  (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
-)
-;diagonale basso-destra
-(defrule mark-diagonal-water-bot-right (declare (salience 40))
-(not (stop-calc))
-  (status (step ?s) (currently running))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-  (not (diag ?x ?y))
-  (test (<= (+ ?x 1) 9))      ; sotto
-  (test (<= (+ ?y 1) 9))      ; destra
+(defrule mark-diagonal-water-bot-left
+   (declare (salience 40))
+   (not (stop-calc))
+   (status (step ?s) (currently running))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+   (not (diag-checked ?x ?y))
+   (not (diag ?x ?y))
+   (test (<= (+ ?x 1) 9))
+   (test (>= (- ?y 1) 0))
 =>
-(assert(diag ?x ?y))
-(cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
-  (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+   (assert (diag ?x ?y))
+   (cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
+   (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
+   (assert (diag-dir ?x ?y bot-left))
 )
+
+(defrule mark-diagonal-water-bot-right
+   (declare (salience 40))
+   (not (stop-calc))
+   (status (step ?s) (currently running))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+   (not (diag-checked ?x ?y))
+   (not (diag ?x ?y))
+   (test (<= (+ ?x 1) 9))
+   (test (<= (+ ?y 1) 9))
+=>
+   (assert (diag ?x ?y))
+   (cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
+   (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+   (assert (diag-dir ?x ?y bot-right))
+)
+
+(defrule check-all-diags-done
+   (diag-dir ?x ?y top-left)
+   (diag-dir ?x ?y top-right)
+   (diag-dir ?x ?y bot-left)
+   (diag-dir ?x ?y bot-right)
+   (not (diag-checked ?x ?y))
+=>
+   (assert (diag-checked ?x ?y))
+)
+
 ;___________________________________________________
 
 ;todo fare controllo sulle diagonali
