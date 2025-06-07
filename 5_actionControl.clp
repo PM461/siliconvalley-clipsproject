@@ -20,7 +20,7 @@
 
 (deffacts contatori
    (numerofire (num 5))
-   (numeroguessed (num 20))
+   (numeroguessed (num 21))
 )
 
 (defrule basta-fire

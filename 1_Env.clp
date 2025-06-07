@@ -230,6 +230,7 @@
 (deffunction scoring (?fok ?fko ?gok ?gko ?saf ?sink ?nf ?ng)
 
 	(- (+ (* ?gok 15) (* ?sink 20) )  (+ (* ?gko 10) (* ?saf 10) (* ?nf 20) (* ?ng 20) ))
+	;(printout t "Your score is  ?fok: " ?fok crlf " ?fko;" ?fko crlf "?gok:" ?gok crlf "?gko" ?gko crlf "?saf" ?saf crlf  "?sink" ?sink crlf "?nf" ?nf crlf  "?ng" ?ng crlf )
 )
 
 	
