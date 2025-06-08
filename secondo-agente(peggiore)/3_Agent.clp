@@ -1,4 +1,4 @@
- ---------------------------------------------
+; ---------------------------------------------
 ;  --- Definizione del modulo e dei template ---
 ;  ---------------------------------------------
 (defmodule AGENT (import MAIN ?ALL) (import ENV ?ALL) (export ?ALL))
@@ -385,38 +385,35 @@
 ;_________________________________________________
 ;MARK WATER PER LE DIAGONALI
 ;diagonale alto-sinistra
-(defrule mark-diagonal-water-top-left
-   (declare (salience 40))
-   (not (stop-calc))
-   (status (step ?s) (currently running))
-   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
-   (test (>= (- ?x 1) 0))
-   (test (>= (- ?y 1) 0))
-=>
-   (assert (diag ?x ?y))
-   (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
-   (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
-   (assert (diag-dir ?x ?y top-left))
+(defrule mark-diagonal-water-top-left (declare (salience 40))
+  (not (stop-calc))
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag-dir ?x ?y top-left))
+  (test (>= (- ?x 1) 0))
+  (test (>= (- ?y 1) 0))
+  =>
+  (assert (diag ?x ?y))
+  (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
+  (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
+  (assert (diag-dir ?x ?y top-left))
 )
 
 (defrule mark-diagonal-water-top-right
-   (declare (salience 41))
-   (not (stop-calc))
-   (status (step ?s) (currently running))
-   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
-   (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
-   (test (>= (- ?x 1) 0))
-   (test (<= (+ ?y 1) 9))
-=>
-   (assert (diag ?x ?y))
-   (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
-   (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
-   (assert (diag-dir ?x ?y top-right))
+  (declare (salience 41))
+  (not (stop-calc))
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
+  (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
+  (not (diag-dir ?x ?y top-right))
+  (test (>= (- ?x 1) 0))
+  (test (<= (+ ?y 1) 9))
+  =>
+  (assert (diag ?x ?y))
+  (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
+  (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
+  (assert (diag-dir ?x ?y top-right))
 )
 
 (defrule mark-diagonal-water-bot-left
@@ -425,8 +422,7 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y bot-left))
    (test (<= (+ ?x 1) 9))
    (test (>= (- ?y 1) 0))
 =>
@@ -442,8 +438,7 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y bot-right))
    (test (<= (+ ?x 1) 9))
    (test (<= (+ ?y 1) 9))
 =>
@@ -452,17 +447,6 @@
    (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
    (assert (diag-dir ?x ?y bot-right))
 )
-
-(defrule check-all-diags-done
-   (diag-dir ?x ?y top-left)
-   (diag-dir ?x ?y top-right)
-   (diag-dir ?x ?y bot-left)
-   (diag-dir ?x ?y bot-right)
-   (not (diag-checked ?x ?y))
-=>
-   (assert (diag-checked ?x ?y))
-)
-
 ;___________________________________________________
 
 ;todo fare controllo sulle diagonali
@@ -479,9 +463,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -491,9 +475,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?y 1) 0))
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -503,9 +487,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (<= (+ ?y 1) 9))   
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -517,9 +501,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?y 1) 9))
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -529,9 +513,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (>= (- ?y 1) 0))
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -541,9 +525,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y)
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -556,9 +540,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -568,9 +552,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -580,9 +564,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?y 1) 0))  
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
    (cancella-tutte-le-copie ?x (- ?y 1) )
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -594,9 +578,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-top ?x ?y))
    (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -606,9 +590,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
    (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -618,9 +602,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?y 1) 9))  
-  (not (mark x? y?)) 
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -632,9 +616,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed))) ; sopra
 )
@@ -643,9 +627,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed))) ; sotto
 )
@@ -655,9 +639,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?y 1) 9))   
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed))) ; destra
 )
@@ -667,9 +651,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?y 1) 0))  
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )

@@ -1,4 +1,4 @@
- ---------------------------------------------
+; ---------------------------------------------
 ;  --- Definizione del modulo e dei template ---
 ;  ---------------------------------------------
 (defmodule AGENT (import MAIN ?ALL) (import ENV ?ALL) (export ?ALL))
@@ -92,18 +92,15 @@
 
 
 (defrule inizializzazione-celle
-(declare (salience 100))
+(declare (salience 100)) 
+  ?fa<-(init-calc-counters-cell (status needed))
+  =>
+  (do-for-all-facts
+    ((?r k-cell )) TRUE
+    (assert (agent-cell (x ?r:x) (y ?r:y) (content ?r:content)))
+  )
    
-   
-   ?fa<-(init-calc-counters-cell (status needed))
-   =>
-   
-      (do-for-all-facts
-      ((?r k-cell )) TRUE
-      (assert (agent-cell (x ?r:x) (y ?r:y) (content ?r:content)))
-      )
-   
-(retract ?fa)
+  (retract ?fa)
    ; actual-boat-per-row (num 0) (row 0)
    ;actual-boat-per-col (num 0) (col 0)
 )
@@ -112,32 +109,30 @@
 (deffunction cancella-tutte-le-copie (?x ?y)
   (do-for-all-facts ((?f agent-cell)) TRUE
     (if (and (= ?f:x ?x)
-             (= ?f:y ?y))
-        then (retract ?f))))
+             (= ?f:y ?y)
+        )
+        then (retract ?f)
+    )
+  )
+)
 
-(defrule copia-azione-missed
-(declare (salience 160))
-   ?caf<-(copiazionefired ?target-x ?target-y)
-   (fire-possibile)
-   
-   (k-cell (x ?x) (y ?y) (content water))
-   
-   (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
-
-   =>
-        (cancella-tutte-le-copie ?x ?y)
-      (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
-      (printout t "Azione copiata: ("  ?x ","  ?y ") -> status fired con content = water"  crlf)
-      
-  
+(defrule copia-azione-missed (declare (salience 160))
+  ?caf<-(copiazionefired ?target-x ?target-y)
+  (fire-possibile)
+  (k-cell (x ?x) (y ?y) (content water))
+  (not (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+  =>
+  (cancella-tutte-le-copie ?x ?y)
+  (assert (agent-cell (x ?x) (y ?y) (content water) (status missed)))
+  (printout t "Azione copiata: ("  ?x ","  ?y ") -> status fired con content = water"  crlf)
 )
 
 (defrule is-stop
-(declare (salience -1 ))
-(stop)
-?fp<-(fire-possibile)
-=>
-(retract ?fp)
+  (declare (salience -1 ))
+  (stop)
+  ?fp<-(fire-possibile)
+  =>
+  (retract ?fp)
 )
 
 (defrule copia-azione-fired
@@ -153,19 +148,11 @@
   (retract ?caf)
   (cancella-tutte-le-copie ?target-x ?target-y)
   (assert (agent-cell (x ?target-x) (y ?target-y) (content ?c) (status fired)))
-  (printout t "Azione copiata: ("  ?target-x ","  ?target-y ") -> status fired con content = " ?c crlf))
-
-
-
-
-
-
+  (printout t "Azione copiata: ("  ?target-x ","  ?target-y ") -> status fired con content = " ?c crlf)
+)
 ;----------------------------------------------
 ; LE CELLE CON 0 SONO SICURAMENTE ACQUA
 ;----------------------------------------------
-
-
-
 
 (defrule mark-water-cell-y0 (declare (salience 50))
 (not (stop-calc))
@@ -196,14 +183,6 @@
 (cancella-tutte-le-copie ?r 2)
   (assert (agent-cell (x ?r) (y 2) (content water) (status missed)))
 )
-
-; (defrule mark-water-cell-y2-u (declare (salience 20))
-;   (status (step ?s) (currently running))
-;   (actual-boat-per-row (row ?r) (num 0))
-;   ?c <- (agent-cell (x ?r) (y 2) (content unknown))
-;   =>
-;   (modify ?c (x ?r) (y 2) (content water) (status missed))
-; )
  
 (defrule mark-water-cell-y3 (declare (salience 50))
   (not (stop-calc))
@@ -391,12 +370,10 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y top-left))
    (test (>= (- ?x 1) 0))
    (test (>= (- ?y 1) 0))
 =>
-   (assert (diag ?x ?y))
    (cancella-tutte-le-copie (- ?x 1) (- ?y 1))
    (assert (agent-cell (x (- ?x 1)) (y (- ?y 1)) (content water) (status missed)))
    (assert (diag-dir ?x ?y top-left))
@@ -408,12 +385,10 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y top-right))
    (test (>= (- ?x 1) 0))
    (test (<= (+ ?y 1) 9))
 =>
-   (assert (diag ?x ?y))
    (cancella-tutte-le-copie (- ?x 1) (+ ?y 1))
    (assert (agent-cell (x (- ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
    (assert (diag-dir ?x ?y top-right))
@@ -425,12 +400,10 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y bot-left))
    (test (<= (+ ?x 1) 9))
    (test (>= (- ?y 1) 0))
 =>
-   (assert (diag ?x ?y))
    (cancella-tutte-le-copie (+ ?x 1) (- ?y 1))
    (assert (agent-cell (x (+ ?x 1)) (y (- ?y 1)) (content water) (status missed)))
    (assert (diag-dir ?x ?y bot-left))
@@ -442,31 +415,15 @@
    (status (step ?s) (currently running))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c water)))
    (agent-cell (x ?x) (y ?y) (content ?c&:(neq ?c unknown)))
-   (not (diag-checked ?x ?y))
-   (not (diag ?x ?y))
+   (not (diag-dir ?x ?y bot-right))
    (test (<= (+ ?x 1) 9))
    (test (<= (+ ?y 1) 9))
 =>
-   (assert (diag ?x ?y))
    (cancella-tutte-le-copie (+ ?x 1) (+ ?y 1))
    (assert (agent-cell (x (+ ?x 1)) (y (+ ?y 1)) (content water) (status missed)))
    (assert (diag-dir ?x ?y bot-right))
 )
-
-(defrule check-all-diags-done
-   (diag-dir ?x ?y top-left)
-   (diag-dir ?x ?y top-right)
-   (diag-dir ?x ?y bot-left)
-   (diag-dir ?x ?y bot-right)
-   (not (diag-checked ?x ?y))
-=>
-   (assert (diag-checked ?x ?y))
-)
-
 ;___________________________________________________
-
-;todo fare controllo sulle diagonali
-
 ;----------------------------------------------
 ; SE HO UNA PARTE DI NAVE POSSO DIRE CHE 
 ; DELL'ACQUA SARà IN TORNO A LUI IN BASE AL PEZZO
@@ -479,9 +436,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert(mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -491,9 +448,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (>= (- ?y 1) 0))
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -503,9 +460,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c top)))
   (test (<= (+ ?y 1) 9))   
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -517,9 +474,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?y 1) 9))
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -529,9 +486,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (>= (- ?y 1) 0))
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -541,9 +498,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c bot)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y)
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -556,9 +513,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert(mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y)
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -568,9 +525,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
@@ -580,9 +537,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c left)))
   (test (>= (- ?y 1) 0))  
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
    (cancella-tutte-le-copie ?x (- ?y 1) )
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -594,10 +551,10 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
-   (cancella-tutte-le-copie (- ?x 1) ?y )
+  (assert(mark-top ?x ?y))
+  (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water sotto
@@ -606,10 +563,11 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
-   (cancella-tutte-le-copie (+ ?x 1) ?y )
+  (assert (mark-bottom ?x ?y))
+
+  (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed)))
 )
 ;water destra
@@ -618,9 +576,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c right)))
   (test (<= (+ ?y 1) 9))  
-  (not (mark x? y?)) 
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed)))
 )
@@ -632,9 +590,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?x 1) 0)) 
-  (not (mark x? y?))
+  (not (mark-top ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert(mark-top ?x ?y))
   (cancella-tutte-le-copie (- ?x 1) ?y )
   (assert (agent-cell (x (- ?x 1)) (y ?y) (content water) (status missed))) ; sopra
 )
@@ -643,9 +601,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?x 1) 9))
-  (not (mark x? y?))
+  (not (mark-bottom ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-bottom ?x ?y))
   (cancella-tutte-le-copie (+ ?x 1) ?y )
   (assert (agent-cell (x (+ ?x 1)) (y ?y) (content water) (status missed))) ; sotto
 )
@@ -655,9 +613,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (<= (+ ?y 1) 9))   
-  (not (mark x? y?))
+  (not (mark-right ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-right ?x ?y))
   (cancella-tutte-le-copie ?x (+ ?y 1))
   (assert (agent-cell (x ?x) (y (+ ?y 1)) (content water) (status missed))) ; destra
 )
@@ -667,9 +625,9 @@
   (status (step ?s) (currently running))
   (agent-cell (x ?x) (y ?y) (content ?c&:(eq ?c sub)))
   (test (>= (- ?y 1) 0))  
-  (not (mark x? y?))
+  (not (mark-left ?x ?y))
   =>
-  (assert(mark ?x ?y))
+  (assert (mark-left ?x ?y))
   (cancella-tutte-le-copie ?x (- ?y 1))
   (assert (agent-cell (x ?x) (y (- ?y 1)) (content water) (status missed)))
 )
@@ -681,81 +639,79 @@
 ;----------------------------------------------
 (defrule AGENT::mark-left-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content left))
-    (test (bind ?yr (+ ?y 1)))
-    
-    (test (not (any-factp ((?c agent-cell))
-                (and (eq ?c:x ?x)
-                     (eq ?c:y (+ ?y 1))
-                     (or (eq ?c:content right)
-                         (eq ?c:content middle)
-                         (eq ?c:content generic))))))
-    =>
-       (assert (agent-guess ?x (+ ?y 1)))
-       (cancella-tutte-le-copie ?x (+ ?y 1))
-    (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic)))
-
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content left))
+  (test (bind ?yr (+ ?y 1)))
+  
+  (test (not (any-factp ((?c agent-cell))
+              (and (eq ?c:x ?x)
+                    (eq ?c:y (+ ?y 1))
+                    (or (eq ?c:content right)
+                        (eq ?c:content middle)
+                        (eq ?c:content generic))))))
+  =>
+  (assert (agent-guess ?x (+ ?y 1)))
+  (cancella-tutte-le-copie ?x (+ ?y 1))
+  (assert (agent-cell (x ?x) (y (+ ?y 1)) (content generic)))
 )
 
 (defrule AGENT::mark-right-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content right))
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content right))
 
-    (test (bind ?yl (- ?y 1)))
-   
-    (test (not (any-factp ((?c agent-cell))
-                (and (eq ?c:x ?x)
-                     (eq ?c:y (- ?y 1))
-                     (or (eq ?c:content left)
-                         (eq ?c:content middle)
-                         (eq ?c:content generic))))))
-    =>
-       (assert (agent-guess ?x (- ?y 1)))
-       (cancella-tutte-le-copie ?x (- ?y 1))
+  (test (bind ?yl (- ?y 1)))
+  
+  (test (not (any-factp ((?c agent-cell))
+              (and (eq ?c:x ?x)
+                    (eq ?c:y (- ?y 1))
+                    (or (eq ?c:content left)
+                        (eq ?c:content middle)
+                        (eq ?c:content generic))))))
+  =>
+  (assert (agent-guess ?x (- ?y 1)))
+  (cancella-tutte-le-copie ?x (- ?y 1))
 
-    (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic)))
+  (assert (agent-cell (x ?x) (y (- ?y 1)) (content generic)))
 )
 
 (defrule AGENT::mark-top-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content top))
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content top))
 
-(test (bind ?xl (+ ?x 1)))
-    
+  (test (bind ?xl (+ ?x 1)))    
 
-    (test (not (any-factp ((?c agent-cell))
-                (and (eq ?c:x (+ ?x 1))
-                     (eq ?c:y ?y)
-                     (or (eq ?c:content bot)
-                         (eq ?c:content middle)
-                         (eq ?c:content generic))))))
-    =>
-    (assert (agent-guess (+ ?x 1) ?y))
-    (cancella-tutte-le-copie (+ ?x 1) ?y)
-    (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic)))
+  (test (not (any-factp ((?c agent-cell))
+              (and (eq ?c:x (+ ?x 1))
+                    (eq ?c:y ?y)
+                    (or (eq ?c:content bot)
+                        (eq ?c:content middle)
+                        (eq ?c:content generic))))))
+  =>
+  (assert (agent-guess (+ ?x 1) ?y))
+  (cancella-tutte-le-copie (+ ?x 1) ?y)
+  (assert (agent-cell (x (+ ?x 1)) (y ?y) (content generic)))
 )
 
 (defrule AGENT::mark-bottom-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content bot))
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content bot))
 
-(test (bind ?xr (- ?x 1)))
-    ?ac <- (agent-cell (x ?xr) (y ?y))
+  (test (bind ?xr (- ?x 1)))
+  ?ac <- (agent-cell (x ?xr) (y ?y))
 
-    (test (not (any-factp ((?c agent-cell))
-                (and (eq ?c:x (- ?x 1))
-                     (eq ?c:y ?y)
-                     (or (eq ?c:content top)
-                         (eq ?c:content middle)
-                         (eq ?c:content generic))))))
-    =>
-       (assert (agent-guess (- ?x 1) ?y))
-       (cancella-tutte-le-copie ?xr ?y)
-    (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic)))
+  (test (not (any-factp ((?c agent-cell))
+              (and (eq ?c:x (- ?x 1))
+                    (eq ?c:y ?y)
+                    (or (eq ?c:content top)
+                        (eq ?c:content middle)
+                        (eq ?c:content generic))))))
+  =>
+  (assert (agent-guess (- ?x 1) ?y))
+  (cancella-tutte-le-copie ?xr ?y)
+  (assert (agent-cell (x (- ?x 1)) (y ?y) (content generic)))
 )
 
 ;----------------------------------------------
@@ -764,36 +720,29 @@
 ;----------------------------------------------
 (defrule AGENT::mark-opposite-left-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content left))
-    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
-    (test (= ?y1 (+ ?y 1))) ; destra
-    (agent-cell (x ?x) (y ?y2) (content water))
-    (test (= ?y2 (+ ?y 2)))
-    
-      
-     
-    =>
-    (assert (agent-guess ?x ?y1))
-    (modify ?opp (content right) )
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content left))
+  ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+  (test (= ?y1 (+ ?y 1))) ; destra
+  (agent-cell (x ?x) (y ?y2) (content water))
+  (test (= ?y2 (+ ?y 2)))
+  =>
+  (assert (agent-guess ?x ?y1))
+  (modify ?opp (content right) )
 )
 
 (defrule AGENT::mark-opposite-right-piece (declare (salience 30))
 (not (stop-calc))
-    (status (step ?s) (currently running))
-    (agent-cell (x ?x) (y ?y) (content right))
-    ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
-    (test (= ?y1 (- ?y 1)))
-     ; destra
-     (agent-cell (x ?x) (y ?y2) (content water))
-    (test (= ?y2 (- ?y 2)))
-    
-      
-    
-    =>
-    
-    (assert (agent-guess ?x ?y1))
-    (modify ?opp (content left) )
+  (status (step ?s) (currently running))
+  (agent-cell (x ?x) (y ?y) (content right))
+  ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
+  (test (= ?y1 (- ?y 1)))
+    ; destra
+  (agent-cell (x ?x) (y ?y2) (content water))
+  (test (= ?y2 (- ?y 2)))
+  =>
+  (assert (agent-guess ?x ?y1))
+  (modify ?opp (content left) )
 )
 
 (defrule AGENT::mark-opposite-top-piece (declare (salience 30))
@@ -820,22 +769,11 @@
     ?opp <- (agent-cell (x ?x1) (y ?y) (content generic))
     (test (= ?x1 (- ?x 1)))
     (agent-cell (x ?x2) (y ?y) (content water))
-    (test (= ?x2 (- ?x 2)))
-    
-      
-      
-      
+    (test (= ?x2 (- ?x 2)))     
     =>
     (assert (agent-guess ?x1 ?y))
     (modify ?opp (content top) )
 )
-
-
-
-
-
-
-
 
 (defrule AGENT::mark-opposite-left-piece-border (declare (salience 30))
 (not (stop-calc))
@@ -843,11 +781,7 @@
     (agent-cell (x ?x) (y ?y) (content left))
     ?opp <- (agent-cell (x ?x) (y ?y1) (content generic))
     (test (= ?y1 (+ ?y 1))) 
-    (test (> (+ ?y 2) 9))
-    
-      
-     
-     
+    (test (> (+ ?y 2) 9))   
     =>
     (assert (agent-guess ?x ?y1))
     (modify ?opp (content right) )
@@ -903,21 +837,16 @@
 )
 
 
-(defrule fill-row-with-generic (declare (salience 30))
-
+(defrule fill-row-with-generic (declare (salience 25))
   ;; Match il fatto della riga
   (actual-boat-per-row (row ?r) (num ?n))
- 
-  
   (test (= ?n 
            (length$ 
              (find-all-facts ((?c agent-cell))
                (and (eq ?c:x ?r)
                     (eq ?c:content unknown))))))
-
   =>
-
-  (printout t "ENTRATO! riga:" ?r "- numero per riga:" ?n "" crlf)
+  (printout t "ENTRATO! riga:" ?r " - numero per riga:" ?n "" crlf)
   ;; Modifica tutte le celle unknown sulla riga ?r
   (bind ?cells 
     (find-all-facts ((?c agent-cell))
@@ -925,23 +854,20 @@
            (eq ?c:content unknown))))
 
   (foreach ?cell ?cells
-  (bind ?x (fact-slot-value ?cell x))
-  (bind ?y (fact-slot-value ?cell y))
-  (printout t "cella:" ?cell "" crlf)
-  (assert (agent-guess ?x ?y))
+    (bind ?x (fact-slot-value ?cell x))
+    (bind ?y (fact-slot-value ?cell y))
+    (printout t "cella:" ?cell "" crlf)
+    (assert (agent-guess ?x ?y))
   
-  (cancella-tutte-le-copie ?x ?y)
-    (assert (agent-cell (x ?x) (y ?y) (content generic)))
-    
-    )
-
+    (cancella-tutte-le-copie ?x ?y)
+    (assert (agent-cell (x ?x) (y ?y) (content generic))) 
+  )
 )
 
-(defrule fill-col-with-generic (declare (salience 30))
+(defrule fill-col-with-generic (declare (salience 25))
 
   ;; Match il fatto della riga
   (actual-boat-per-col (col ?r) (num ?n))
-  (actual-boat-per-col (col ?r) (num ?n&:(> ?n 0)))
   (test (= ?n 
            (length$ 
              (find-all-facts ((?c agent-cell))
@@ -950,7 +876,7 @@
 
   =>
 
-  (printout t "ENTRATO! colonna:" ?r "- numero per riga:" ?n "" crlf)
+  (printout t "ENTRATO! colonna:" ?r "- numero per colonna:" ?n "" crlf)
   ;; Modifica tutte le celle unknown sulla riga ?r
   (bind ?cells 
     (find-all-facts ((?c agent-cell))
@@ -958,14 +884,15 @@
            (eq ?c:content unknown))))
 
   (foreach ?cell ?cells
-  (bind ?x (fact-slot-value ?cell x))
-  (bind ?y (fact-slot-value ?cell y))
-  (printout t "cella:" ?cell "" crlf)
-  (assert (agent-guess ?x ?y))
+    (bind ?x (fact-slot-value ?cell x))
+    (bind ?y (fact-slot-value ?cell y))
+    (printout t "cella:" ?cell "" crlf)
+    (assert (agent-guess ?x ?y))
 
-  (cancella-tutte-le-copie ?x ?y)
+    (cancella-tutte-le-copie ?x ?y)
     (assert (agent-cell (x ?x) (y ?y) (content generic)))
-  ))
+  )
+)
 ;----------------------------------------------
 ; REGOLA CHE DICE CHE SE MI TROVO SU UN BORDO ED HO UN MIDDLE 
 ; POSSO DIRE CHE I DUE PEZZI NEL LATO POSSIBILE
@@ -973,7 +900,7 @@
 ;TO-DO
 ;----------------------------------------------
 
-(defrule AGENT::identify-boats-at-border-with-middle (declare (salience 30))
+(defrule AGENT::identify-boats-at-border-with-middle (declare (salience 31))
 (not (stop-calc))
     (status (step ?s) (currently running))
     ?acell <- (agent-cell (x ?x) (y ?y) (content middle) (boat-checked FALSE) )
@@ -1119,9 +1046,9 @@
 (not (stop-calc))
     (status (step ?s) (currently running))
     (agent-cell (x ?x) (y ?y) (content middle))
-    (not(closes x? y?))
+    (not(closes ?x ?y))
     =>
-    (assert (closes x? y?))
+    (assert (closes ?x ?y))
     ; Coordinate adiacenti e secondarie
     (bind ?y-left (- ?y 1))
     (bind ?y-right (+ ?y 1))
@@ -1240,40 +1167,28 @@
    ;actual-boat-per-col (num 0) (col 0)
 ;----------------------------------------------
 
-(defrule AGENT::remove-boat-from-col-row 
-(declare (salience 160))
+(defrule AGENT::remove-boat-from-col-row (declare (salience 28))
 (not (stop-calc))
-   (status (step ?s) (currently running))
-   ?cell <- (agent-cell (x ?x) (y ?y) (content ?d&:(and (neq ?d water) (neq ?d unknown))) (boat-checked FALSE))
-   ?r <- (actual-boat-per-row (row ?x) (num ?n1))
-   ?c <- (actual-boat-per-col (col ?y) (num ?n2))
-   (test (or (> ?n1 0) (> ?n2 0)))
-   =>
-   (bind ?new-n1 (- ?n1 1))
-   (bind ?new-n2 (- ?n2 1))
+  (status (step ?s) (currently running))
+  ?cell <- (agent-cell (x ?x) (y ?y) (content ?d&:(and (neq ?d water) (neq ?d unknown))))
+  ?r <- (actual-boat-per-row (row ?x) (num ?n1))
+  ?c <- (actual-boat-per-col (col ?y) (num ?n2))
+  (test (or (> ?n1 0) (> ?n2 0)))
+  (not (boat-checked ?x ?y))
+  =>
+  (assert (boat-checked ?x ?y))
+  (bind ?new-n1 (- ?n1 1))
+  (bind ?new-n2 (- ?n2 1))
 
-(retract ?r)
-(retract ?c)
+  (retract ?r)
+  (retract ?c)
 
-(assert (actual-boat-per-row (row ?x) (num ?new-n1)))
-(assert (actual-boat-per-col (col ?y) (num ?new-n2)))
+  (assert (actual-boat-per-row (row ?x) (num ?new-n1)))
+  (assert (actual-boat-per-col (col ?y) (num ?new-n2)))
    
-   (modify ?cell (boat-checked TRUE))
-   (printout t "barche rimanenti riga " ?x " -> " ?new-n1 " barche rimanenti colonna " ?y " -> " ?new-n2 crlf)
+   
+  (printout t "barche rimanenti riga " ?x " -> " ?new-n1 " barche rimanenti colonna " ?y " -> " ?new-n2 crlf)
 )
-
-; (defrule AGENT::remove-boat-from-col 
-; (declare (salience 3))
-;    (status (step ?s) (currently running))
-;    ?cell <- (agent-cell (x ?x) (y ?y) (content ?c&:(and (neq ?c water) (neq ?c unknown))) (boat-checked FALSE))
-;    ?b <- (actual-boat-per-col (col ?y) (num ?n&:(> ?n 0)))
-;    =>
-;    (bind ?new-n (- ?n 1))
-;    (modify ?b (num ?new-n))
-;    (modify ?cell (boat-checked TRUE))
-;    (printout t "barche rimanenti colonna " ?y " -> " ?new-n crlf)
-; )
-
 
 ; (defrule fire-check (declare (salience 0))
 ;     (status (step ?s) (currently running))
@@ -1293,13 +1208,13 @@
 	(printout t "I know that cell [" ?x ", " ?y "] contains " ?t "." ?s " check "?k crlf)
 )
 
-(defrule create-missing-agent-cells (declare (salience 15))
-   ?c <- (coord x ?x y ?y)
-   (not (agent-cell (x ?x) (y ?y)))
-   =>
-   (assert (agent-cell (x ?x) (y ?y) (content unknown)))
+(defrule create-missing-agent-cells (declare (salience 26))
+  (coord x ?x y ?y)
+  (not (agent-cell (x ?x) (y ?y)))
+  =>
+  (assert (agent-cell (x ?x) (y ?y) (content unknown)))
+  (printout t "Cella (" ?x "," ?y ") content: " crlf)
 )
-
 
 (defrule AGENT::guess-control
   (declare (salience  -10)) ; priorità bassissima, viene eseguita solo se non c'è altro
@@ -1308,9 +1223,6 @@
   (printout t "🔁 CI SONO DELLE AZIONI guess DA ESEGUIRE, passo a PROB..." crlf)
   (focus PROB)
 )
-
-
-
 
 (defrule AGENT::idle-when-no-more-rules
   (declare (salience 10)) ; priorità bassissima, viene eseguita solo se non c'è altro
